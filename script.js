@@ -19,20 +19,32 @@ buttonsContainer.appendChild(buttonClear);
 buttonsContainer.addEventListener('click', function(event) {
     const clickedButton = event.target;
     const buttonValue = clickedButton.textContent;
+    const parsedButtonValue = parseFloat(buttonValue)
+    const isDigit = spotDigit(parsedButtonValue);
 
-    /*if (isDisplayZero && button) {
+    if (isDisplayZero && isDigit) {
         displayContainer.textContent = buttonValue;
         isDisplayZero = false;
-        number1 = parseFloat(buttonValue);
+        number1 = parsedButtonValue;
     } else {
-        displayContainer.textContent += buttonValue;
-        if (operator === null) {
-            number1 = parseFloat(displayContainer.textContent);
+        number1 = 0;
+        if (!isDigit) {
+            operator = buttonValue;
         } else {
-            number2 = parseFloat(displayContainer.textContent);
+            number2 = buttonValue;
         }
+        displayContainer.textContent += buttonValue; 
     }
-});*/
+    isDisplayZero = false;
+    console.log(`Number1: ${number1}`);
+    console.log(`Operator ${operator}`);
+    console.log(`Number2: ${number2}`);
+});
+
+function spotDigit(symbolToCheck) {
+    console.log(Number.isInteger(symbolToCheck));
+    return Number.isInteger(symbolToCheck);
+}
 
 function createButtonsOperators() {
     for (let i = 0; i < operators.length; i++) {
