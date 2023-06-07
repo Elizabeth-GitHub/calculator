@@ -44,8 +44,7 @@ function addToDisplay(valueToDisplay, gap=false) {
 
 function handleDigitButton(digitValue) {
     if (isFirstNumber) {
-        /*number1 = (number1 === 0) ? digitValue : `${number1}${digitValue}`;*/
-        addToDisplay(digitValue);
+        number1 = (number1 === 0) ? digitValue : `${number1}${digitValue}`;
         displayContainer.textContent = number1;
     } else {
         isSecondNumber = true;
@@ -63,7 +62,7 @@ function handleOperatorButton(operatorValue) {
     } else {
         let result = operate(parseFloat(number1), parseFloat(number2), operator);
 
-        displayContainer.textContent = result;
+        displayContainer.textContent = parseFloat(result.toFixed(5));
         number1 = result;
         number2 = ''; 
         if (operatorValue !== '=') {
