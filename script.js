@@ -4,9 +4,10 @@ const buttonsContainer = document.getElementById('buttons-container');
 const displayContainer = document.getElementById('display');
 const buttonClear = document.createElement('button');
 
-let isDisplayZero = true;
-let number1 = null;
-let number2 = null;
+let isFirstNumber = true;
+let isSecondNumber = false;
+let number1 = 0;
+let number2 = '';
 let operator = null;
 
 createButtonsOperators();
@@ -16,34 +17,55 @@ buttonClear.classList.add('button');
 buttonClear.textContent = 'CLEAR';
 buttonsContainer.appendChild(buttonClear);
 
-buttonsContainer.addEventListener('click', function(event) {
+buttonsContainer.addEventListener('click', handleButtonClick);
+
+function handleButtonClick(event) {
     const clickedButton = event.target;
     const buttonValue = clickedButton.textContent;
-    const parsedButtonValue = parseFloat(buttonValue)
-    const isDigit = spotDigit(parsedButtonValue);
+    const isDigit = !isNaN(parseFloat(buttonValue));
 
-    if (isDisplayZero && isDigit) {
-        displayContainer.textContent = buttonValue;
-        isDisplayZero = false;
-        number1 = parsedButtonValue;
+    if (isDigit) {
+        handleDigitButton(buttonValue);
     } else {
-        number1 = 0;
-        if (!isDigit) {
-            operator = buttonValue;
-        } else {
-            number2 = buttonValue;
-        }
-        displayContainer.textContent += buttonValue; 
+        handleOperatorButton(buttonValue);
     }
-    isDisplayZero = false;
-    console.log(`Number1: ${number1}`);
-    console.log(`Operator ${operator}`);
-    console.log(`Number2: ${number2}`);
-});
+}
 
-function spotDigit(symbolToCheck) {
-    console.log(Number.isInteger(symbolToCheck));
-    return Number.isInteger(symbolToCheck);
+function addToDisplay(valueToDisplay) {
+    displayContainer.textContent += ` ${valueToDisplay}`;
+}
+
+function handleDigitButton(digitValue) {
+    if (isFirstNumber) {
+        number1 = (number1 === 0) ? buttonValue : `${number1}${digitValue}`;
+        displayContainer.textContent = number1;
+    } else {
+        isSecondNumber = true;
+        number2 += digitValue;
+        addToDisplay(number2);
+    }
+}
+
+function handleOperatorButton(operatorValue) {
+    addToDisplay(operatorValue);
+
+    if (!isSecondNumber) {
+        isFirstNumber = false;
+        operator = operatorValue;
+    } else {
+        let result = operate(parseFloat(number1), parseFloat(number2), operator);
+
+        displayContainer.textContent = result;
+        number1 = result;
+        number2 = ''; 
+        if (operatorValue !== '=') {
+            operator = operatorValue;
+            addToDisplay(operatorValue);
+        } else {
+            isSecondNumber = false;
+            operator = null;
+        }
+    }
 }
 
 function createButtonsOperators() {
@@ -68,13 +90,13 @@ function createButtonsDigits() {
 
 function operate(element1, element2, symbol) {
     if (symbol === '+') {
-        add(element1, element2);
+        return add(element1, element2);
     } else if (symbol === '-') {
-        subtract(element1, element2);
+        return subtract(element1, element2);
     } else if (symbol === '*') {
-        multiply(element1, element2);
+        return multiply(element1, element2);
     } else if (symbol === '/') {
-        divide(element1, element2);
+        return divide(element1, element2);
     }
 }
 
@@ -93,8 +115,3 @@ function multiply(factor1, factor2) {
 function divide(dividend, divisor) {
     return dividend / divisor;
 }
-
-console.log(add(2, 3));
-console.log(subtract(10, 2));
-console.log(multiply(10, 5));
-console.log(divide(30, 4));
