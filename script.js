@@ -1,6 +1,7 @@
 const operators = ['+', '-', '*', '/', '='];
 
 const buttonsContainer = document.getElementById('buttons-container');
+const operationalButtonsContainer = document.createElement('div');
 const displayContainer = document.getElementById('display');
 const buttonClear = document.createElement('button');
 
@@ -15,9 +16,15 @@ createButtonsDigits();
 
 buttonClear.classList.add('button');
 buttonClear.textContent = 'CLEAR';
+
+buttonsContainer.appendChild(operationalButtonsContainer);
 buttonsContainer.appendChild(buttonClear);
 
-buttonsContainer.addEventListener('click', handleButtonClick);
+operationalButtonsContainer.addEventListener('click', handleButtonClick);
+buttonClear.addEventListener('click', () => {
+    [number1, number2, operator] = [0, null, ''];
+    displayContainer.textContent = number1;
+});
 
 function handleButtonClick(event) {
     const clickedButton = event.target;
@@ -37,7 +44,7 @@ function addToDisplay(valueToDisplay) {
 
 function handleDigitButton(digitValue) {
     if (isFirstNumber) {
-        number1 = (number1 === 0) ? buttonValue : `${number1}${digitValue}`;
+        number1 = (number1 === 0) ? digitValue : `${number1}${digitValue}`;
         displayContainer.textContent = number1;
     } else {
         isSecondNumber = true;
@@ -74,7 +81,7 @@ function createButtonsOperators() {
 
         buttonOperator.classList.add('button');
         buttonOperator.textContent = operators[i];
-        buttonsContainer.appendChild(buttonOperator);
+        operationalButtonsContainer.appendChild(buttonOperator);
     }
 }
 
@@ -84,7 +91,7 @@ function createButtonsDigits() {
 
         buttonDigit.classList.add('button');
         buttonDigit.textContent = i;
-        buttonsContainer.appendChild(buttonDigit);
+        operationalButtonsContainer.appendChild(buttonDigit);
     }
 }
 
