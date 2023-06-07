@@ -38,23 +38,24 @@ function handleButtonClick(event) {
     }
 }
 
-function addToDisplay(valueToDisplay) {
-    displayContainer.textContent += ` ${valueToDisplay}`;
+function addToDisplay(valueToDisplay, gap=false) {
+    displayContainer.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
 }
 
 function handleDigitButton(digitValue) {
     if (isFirstNumber) {
-        number1 = (number1 === 0) ? digitValue : `${number1}${digitValue}`;
+        /*number1 = (number1 === 0) ? digitValue : `${number1}${digitValue}`;*/
+        addToDisplay(digitValue);
         displayContainer.textContent = number1;
     } else {
         isSecondNumber = true;
         number2 += digitValue;
-        addToDisplay(number2);
+        addToDisplay(digitValue);
     }
 }
 
 function handleOperatorButton(operatorValue) {
-    addToDisplay(operatorValue);
+    addToDisplay(operatorValue, gap=true);
 
     if (!isSecondNumber) {
         isFirstNumber = false;
@@ -67,7 +68,7 @@ function handleOperatorButton(operatorValue) {
         number2 = ''; 
         if (operatorValue !== '=') {
             operator = operatorValue;
-            addToDisplay(operatorValue);
+            addToDisplay(operatorValue, gap=true);
         } else {
             isSecondNumber = false;
             operator = null;
