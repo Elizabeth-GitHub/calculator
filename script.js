@@ -9,7 +9,7 @@ const errorMessageContainer = document.createElement('div');
 
 let isFirstNumber = true;
 let isSecondNumber = false;
-let number1 = 0;
+let number1 = '0';
 let number2 = '';
 let operator = null;
 
@@ -60,7 +60,7 @@ function addToDisplay(valueToDisplay, gap=false) {
 
 function handleDigitButton(digitValue) {
     if (isFirstNumber) {
-        number1 = (number1 === 0) ? digitValue : `${number1}${digitValue}`;
+        number1 = (number1 === '0' && digitValue === '0') ? '0' : (number1 === '0' ? digitValue : `${number1}${digitValue}`); 
         displayContainer.textContent = number1;
     } else {
         isSecondNumber = true;
