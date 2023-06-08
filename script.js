@@ -6,38 +6,59 @@ const operationalButtonsContainer = document.createElement('div');
 const displayContainer = document.getElementById('display');
 const buttonClear = document.createElement('button');
 const errorMessageContainer = document.createElement('div');
+const errorEqual = document.createElement('p');
+const errorZero = document.createElement('p');
 
 let isFirstNumber = true;
 let isSecondNumber = false;
 let number1 = '0';
 let number2 = '';
-let operator = null;
+let operator = '';
 
 createButtonsOperators();
 createButtonsDigits();
 
 buttonClear.classList.add('button');
 buttonClear.textContent = 'CLEAR';
-errorMessageContainer.classList.add('hidden');
-errorMessageContainer.textContent = 'Incorrect action. Perform a calculation first.';
+errorEqual.classList.add('hidden');
+errorZero.classList.add('hidden');
+errorEqual.textContent = 'Incorrect action. Perform a calculation first.'
+errorZero.textContent = 'It seems you\'re trying to divide by zero. Division by zero is not allowed in this calculator.\
+                        Please choose a non-zero value as the divisor to proceed with the division operation.'
+/*errorMessageContainer.classList.add('hidden');*/
+/*errorMessageContainer.textContent = 'Incorrect action. Perform a calculation first.';*/
 
 document.body.appendChild(mainContainer);
 mainContainer.appendChild(buttonsContainer);
 buttonsContainer.appendChild(operationalButtonsContainer);
 buttonsContainer.appendChild(buttonClear);
 mainContainer.appendChild(errorMessageContainer);
+errorMessageContainer.appendChild(errorEqual);
+errorMessageContainer.appendChild(errorZero);
 
 operationalButtonsContainer.addEventListener('click', handleButtonClick);
 buttonClear.addEventListener('click', () => {
-    [number1, number2, operator] = [0, null, ''];
+    isSecondNumber = false;
+    [number1, number2, operator] = ['0', '', ''];
     displayContainer.textContent = number1;
+    hideErrorMessage();
+    /*console.log(`number1 after clear: ${number1}`);
+    console.log(`operator after clear: ${operator}`);
+    console.log(`number2 after clear: ${number2}`);*/
 });
 
 //
-function hideErrorMessage() {
+/*function hideErrorMessage() {
     if (!errorMessageContainer.classList.contains('hidden')) {
         errorMessageContainer.classList.add('hidden');
     }
+}*/
+function hideErrorMessage() {
+    Array.from(errorMessageContainer.children).forEach(child => {
+        if (!child.classList.contains('hidden')) {
+            child.classList.add('hidden');
+        }
+    });
 }
 
 function handleButtonClick(event) {
@@ -64,16 +85,31 @@ function handleDigitButton(digitValue) {
         displayContainer.textContent = number1;
     } else {
         isSecondNumber = true;
+        if (number2 === '' && digitValue === '0' && operator === '/') {
+            showErrorMessage(errorZero);
+            return;
+        }
         number2 += digitValue;
         addToDisplay(digitValue);
     }
+    console.log(`number1: ${number1}`);
+    console.log(`number2: ${number2}`);
 }
 
-function checkErrorMesage(operatorToCheck) {
+function showErrorMessage(errorToShow) {
+    errorToShow.classList.remove('hidden');
+}
+
+function checkErrorMesage(operatorToCheck=operator) {
     if (operatorToCheck === '=' && !isSecondNumber) {
-        errorMessageContainer.classList.remove('hidden');
-        return true
+        showErrorMessage(errorEqual);
+        return true;
     }
+
+    /*if (operatorToCheck === '/' && number2 === '0') {
+        showErrorMessage(errorZero);
+        return true;
+    }*/
 }
 
 function handleOperatorButton(operatorValue) {
@@ -86,6 +122,9 @@ function handleOperatorButton(operatorValue) {
     if (!isSecondNumber) {
         isFirstNumber = false;
         operator = operatorValue;
+    } else if (checkErrorMesage()) {
+        console.log('TRUE');
+        return;
     } else {
         let result = operate(parseFloat(number1), parseFloat(number2), operator);
 
@@ -99,6 +138,8 @@ function handleOperatorButton(operatorValue) {
             isSecondNumber = false;
             operator = null;
         }
+
+    console.log(`operator: ${operator}`);
     }
 }
 
