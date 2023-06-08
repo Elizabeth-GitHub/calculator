@@ -1,9 +1,11 @@
 const operators = ['+', '-', '*', '/', '='];
 
+const mainContainer = document.createElement('div');
 const buttonsContainer = document.getElementById('buttons-container');
 const operationalButtonsContainer = document.createElement('div');
 const displayContainer = document.getElementById('display');
 const buttonClear = document.createElement('button');
+const errorMessageContainer = document.createElement('div');
 
 let isFirstNumber = true;
 let isSecondNumber = false;
@@ -16,9 +18,14 @@ createButtonsDigits();
 
 buttonClear.classList.add('button');
 buttonClear.textContent = 'CLEAR';
+errorMessageContainer.classList.add('hidden');
+errorMessageContainer.textContent = 'Incorrect action. Perform a calculation first.';
 
+document.body.appendChild(mainContainer);
+mainContainer.appendChild(buttonsContainer);
 buttonsContainer.appendChild(operationalButtonsContainer);
 buttonsContainer.appendChild(buttonClear);
+mainContainer.appendChild(errorMessageContainer);
 
 operationalButtonsContainer.addEventListener('click', handleButtonClick);
 buttonClear.addEventListener('click', () => {
@@ -26,10 +33,19 @@ buttonClear.addEventListener('click', () => {
     displayContainer.textContent = number1;
 });
 
+//
+function hideErrorMessage() {
+    if (!errorMessageContainer.classList.contains('hidden')) {
+        errorMessageContainer.classList.add('hidden');
+    }
+}
+
 function handleButtonClick(event) {
     const clickedButton = event.target;
     const buttonValue = clickedButton.textContent;
     const isDigit = !isNaN(parseFloat(buttonValue));
+
+    hideErrorMessage(); 
 
     if (isDigit) {
         handleDigitButton(buttonValue);
@@ -53,7 +69,18 @@ function handleDigitButton(digitValue) {
     }
 }
 
+function checkErrorMesage(operatorToCheck) {
+    if (operatorToCheck === '=' && !isSecondNumber) {
+        errorMessageContainer.classList.remove('hidden');
+        return true
+    }
+}
+
 function handleOperatorButton(operatorValue) {
+    if (checkErrorMesage(operatorValue)) {
+        return;
+    };
+
     addToDisplay(operatorValue, gap=true);
 
     if (!isSecondNumber) {
