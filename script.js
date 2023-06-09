@@ -1,4 +1,4 @@
-const operators = ['+', '-', '*', '/', '='];
+const OPERATORS = ['+', '-', '*', '/', '='];
 
 const mainContainer = document.createElement('div');
 const buttonsContainer = document.getElementById('buttons-container');
@@ -25,8 +25,6 @@ errorZero.classList.add('hidden');
 errorEqual.textContent = 'Incorrect action. Perform a calculation first.'
 errorZero.textContent = 'It seems you\'re trying to divide by zero. Division by zero is not allowed in this calculator.\
                         Please choose a non-zero value as the divisor to proceed with the division operation.'
-/*errorMessageContainer.classList.add('hidden');*/
-/*errorMessageContainer.textContent = 'Incorrect action. Perform a calculation first.';*/
 
 document.body.appendChild(mainContainer);
 mainContainer.appendChild(buttonsContainer);
@@ -42,17 +40,9 @@ buttonClear.addEventListener('click', () => {
     [number1, number2, operator] = ['0', '', ''];
     displayContainer.textContent = number1;
     hideErrorMessage();
-    /*console.log(`number1 after clear: ${number1}`);
-    console.log(`operator after clear: ${operator}`);
-    console.log(`number2 after clear: ${number2}`);*/
 });
 
 //
-/*function hideErrorMessage() {
-    if (!errorMessageContainer.classList.contains('hidden')) {
-        errorMessageContainer.classList.add('hidden');
-    }
-}*/
 function hideErrorMessage() {
     Array.from(errorMessageContainer.children).forEach(child => {
         if (!child.classList.contains('hidden')) {
@@ -62,8 +52,7 @@ function hideErrorMessage() {
 }
 
 function handleButtonClick(event) {
-    const clickedButton = event.target;
-    const buttonValue = clickedButton.textContent;
+    const buttonValue = event.target.textContent;
     const isDigit = !isNaN(parseFloat(buttonValue));
 
     hideErrorMessage(); 
@@ -80,7 +69,11 @@ function addToDisplay(valueToDisplay, gap=false) {
 }
 
 function handleDigitButton(digitValue) {
-    if (isFirstNumber) {
+    if (operator === null && !isSecondNumber) {
+        number1 = digitValue;
+        displayContainer.textContent = number1;
+        operator = '';
+    } else if (isFirstNumber) {
         number1 = (number1 === '0' && digitValue === '0') ? '0' : (number1 === '0' ? digitValue : `${number1}${digitValue}`); 
         displayContainer.textContent = number1;
     } else {
@@ -92,24 +85,17 @@ function handleDigitButton(digitValue) {
         number2 += digitValue;
         addToDisplay(digitValue);
     }
-    console.log(`number1: ${number1}`);
-    console.log(`number2: ${number2}`);
 }
 
 function showErrorMessage(errorToShow) {
     errorToShow.classList.remove('hidden');
 }
 
-function checkErrorMesage(operatorToCheck=operator) {
+function checkErrorMesage(operatorToCheck) {
     if (operatorToCheck === '=' && !isSecondNumber) {
         showErrorMessage(errorEqual);
         return true;
     }
-
-    /*if (operatorToCheck === '/' && number2 === '0') {
-        showErrorMessage(errorZero);
-        return true;
-    }*/
 }
 
 function handleOperatorButton(operatorValue) {
@@ -122,14 +108,12 @@ function handleOperatorButton(operatorValue) {
     if (!isSecondNumber) {
         isFirstNumber = false;
         operator = operatorValue;
-    } else if (checkErrorMesage()) {
-        console.log('TRUE');
-        return;
     } else {
         let result = operate(parseFloat(number1), parseFloat(number2), operator);
 
         displayContainer.textContent = parseFloat(result.toFixed(5));
         number1 = result;
+        isFirstNumber = true;
         number2 = ''; 
         if (operatorValue !== '=') {
             operator = operatorValue;
@@ -138,17 +122,15 @@ function handleOperatorButton(operatorValue) {
             isSecondNumber = false;
             operator = null;
         }
-
-    console.log(`operator: ${operator}`);
     }
 }
 
 function createButtonsOperators() {
-    for (let i = 0; i < operators.length; i++) {
+    for (let i = 0; i < OPERATORS.length; i++) {
         const buttonOperator = document.createElement('button');
 
         buttonOperator.classList.add('button');
-        buttonOperator.textContent = operators[i];
+        buttonOperator.textContent = OPERATORS[i];
         operationalButtonsContainer.appendChild(buttonOperator);
     }
 }
