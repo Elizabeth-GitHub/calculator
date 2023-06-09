@@ -1,18 +1,21 @@
 const OPERATORS = ['+', '-', '*', '/', '='];
 
-const mainContainer = document.createElement('div');
-const buttonsContainer = document.getElementById('buttons-container');
-const operationalButtonsContainer = document.createElement('div');
-const displayContainer = document.getElementById('display');
+const containerMain = document.createElement('div');
+const containerCalculator = document.createElement('div');
+const containerButtons = document.getElementById('buttons-container');
+const containerOperationalButtons = document.createElement('div');
+const containerDisplay = document.getElementById('display');
 const buttonDecimalPoint = document.createElement('button');
 const buttonClear = document.createElement('button');
-const errorMessageContainer = document.createElement('div');
+const containerErrorMessage = document.createElement('div');
 const errorEqual = document.createElement('p');
 const errorZero = document.createElement('p');
+const containers = document.querySelectorAll('div');;
 
 let isFirstNumber = true;
 let isSecondNumber = false;
 let isDecimalPointDisabled = false;
+let isError = false;
 let number1 = '0';
 let number2 = '';
 let operator = '';
@@ -20,6 +23,9 @@ let operator = '';
 createButtonsOperators();
 createButtonsDigits();
 
+containers.forEach(container => {
+    container.classList.add('container');
+});
 buttonDecimalPoint.classList.add('button');
 buttonDecimalPoint.textContent = '.';
 buttonClear.classList.add('button');
@@ -30,16 +36,17 @@ errorEqual.textContent = 'Incorrect action. Perform a calculation first.'
 errorZero.textContent = 'It seems you\'re trying to divide by zero. Division by zero is not allowed in this calculator.\
                         Please choose a non-zero value as the divisor to proceed with the division operation.'
 
-document.body.appendChild(mainContainer);
-mainContainer.appendChild(buttonsContainer);
-buttonsContainer.appendChild(operationalButtonsContainer);
-buttonsContainer.appendChild(buttonDecimalPoint);
-buttonsContainer.appendChild(buttonClear);
-mainContainer.appendChild(errorMessageContainer);
-errorMessageContainer.appendChild(errorEqual);
-errorMessageContainer.appendChild(errorZero);
+document.body.appendChild(containerMain);
+containerMain.appendChild(containerCalculator);
+containerCalculator.appendChild(containerButtons);
+containerButtons.appendChild(containerOperationalButtons);
+containerButtons.appendChild(buttonDecimalPoint);
+containerButtons.appendChild(buttonClear);
+containerCalculator.appendChild(containerErrorMessage);
+containerErrorMessage.appendChild(errorEqual);
+containerErrorMessage.appendChild(errorZero);
 
-operationalButtonsContainer.addEventListener('click', handleButtonClick);
+containerOperationalButtons.addEventListener('click', handleButtonClick);
 buttonDecimalPoint.addEventListener('click', function() {
     if (isFirstNumber) {
         number1 += this.textContent;
@@ -53,16 +60,25 @@ buttonDecimalPoint.addEventListener('click', function() {
 buttonClear.addEventListener('click', () => {
     isSecondNumber = false;
     [number1, number2, operator] = ['0', '', ''];
-    displayContainer.textContent = number1;
+    containerDisplay.textContent = number1;
     checkDecimalPoint();
+    checkErrorMesage();
+
 });
 
 //
+function checkErrorMesage() {
+    if (isError) {
+        hideErrorMessage(); 
+    }
+}
+
 function hideErrorMessage() {
-    Array.from(errorMessageContainer.children).forEach(child => {
+    Array.from(containerErrorMessage.children).forEach(child => {
         if (!child.classList.contains('hidden')) {
             child.classList.add('hidden');
         }
+        isError = false;
     });
 }
 
@@ -70,7 +86,7 @@ function handleButtonClick(event) {
     const buttonValue = event.target.textContent;
     const isDigit = !isNaN(parseFloat(buttonValue));
 
-    hideErrorMessage(); 
+    checkErrorMesage();
 
     if (isDigit) {
         handleDigitButton(buttonValue);
@@ -80,17 +96,17 @@ function handleButtonClick(event) {
 }
 
 function addToDisplay(valueToDisplay, gap=false) {
-    displayContainer.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
+    containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
 }
 
 function handleDigitButton(digitValue) {
     if (operator === null && !isSecondNumber) {
         number1 = digitValue;
-        displayContainer.textContent = number1;
+        containerDisplay.textContent = number1;
         operator = '';
     } else if (isFirstNumber) {
         number1 = (number1 === '0' && digitValue === '0') ? '0' : (number1 === '0' ? digitValue : `${number1}${digitValue}`); 
-        displayContainer.textContent = number1;
+        containerDisplay.textContent = number1;
     } else {
         isSecondNumber = true;
         if (number2 === '' && digitValue === '0' && operator === '/') {
@@ -104,9 +120,10 @@ function handleDigitButton(digitValue) {
 
 function showErrorMessage(errorToShow) {
     errorToShow.classList.remove('hidden');
+    isError = true;
 }
 
-function checkErrorMesage(operatorToCheck) {
+function checkEqualError(operatorToCheck) {
     if (operatorToCheck === '=' && !isSecondNumber) {
         showErrorMessage(errorEqual);
         return true;
@@ -124,7 +141,7 @@ function checkDecimalPoint() {
 }
 
 function handleOperatorButton(operatorValue) {
-    if (checkErrorMesage(operatorValue)) {
+    if (checkEqualError(operatorValue)) {
         return;
     };
 
@@ -138,7 +155,7 @@ function handleOperatorButton(operatorValue) {
 
         let result = operate(parseFloat(number1), parseFloat(number2), operator);
 
-        displayContainer.textContent = parseFloat(result.toFixed(5));
+        containerDisplay.textContent = parseFloat(result.toFixed(5));
         number1 = result;
         isFirstNumber = true;
         number2 = ''; 
@@ -158,7 +175,7 @@ function createButtonsOperators() {
 
         buttonOperator.classList.add('button');
         buttonOperator.textContent = OPERATORS[i];
-        operationalButtonsContainer.appendChild(buttonOperator);
+        containerOperationalButtons.appendChild(buttonOperator);
     }
 }
 
@@ -168,7 +185,7 @@ function createButtonsDigits() {
 
         buttonDigit.classList.add('button');
         buttonDigit.textContent = i;
-        operationalButtonsContainer.appendChild(buttonDigit);
+        containerOperationalButtons.appendChild(buttonDigit);
     }
 }
 
