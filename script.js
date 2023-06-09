@@ -4,6 +4,7 @@ const mainContainer = document.createElement('div');
 const buttonsContainer = document.getElementById('buttons-container');
 const operationalButtonsContainer = document.createElement('div');
 const displayContainer = document.getElementById('display');
+const buttonDecimalPoint = document.createElement('button');
 const buttonClear = document.createElement('button');
 const errorMessageContainer = document.createElement('div');
 const errorEqual = document.createElement('p');
@@ -11,6 +12,7 @@ const errorZero = document.createElement('p');
 
 let isFirstNumber = true;
 let isSecondNumber = false;
+let isDecimalPointDisabled = false;
 let number1 = '0';
 let number2 = '';
 let operator = '';
@@ -18,6 +20,8 @@ let operator = '';
 createButtonsOperators();
 createButtonsDigits();
 
+buttonDecimalPoint.classList.add('button');
+buttonDecimalPoint.textContent = '.';
 buttonClear.classList.add('button');
 buttonClear.textContent = 'CLEAR';
 errorEqual.classList.add('hidden');
@@ -29,17 +33,28 @@ errorZero.textContent = 'It seems you\'re trying to divide by zero. Division by 
 document.body.appendChild(mainContainer);
 mainContainer.appendChild(buttonsContainer);
 buttonsContainer.appendChild(operationalButtonsContainer);
+buttonsContainer.appendChild(buttonDecimalPoint);
 buttonsContainer.appendChild(buttonClear);
 mainContainer.appendChild(errorMessageContainer);
 errorMessageContainer.appendChild(errorEqual);
 errorMessageContainer.appendChild(errorZero);
 
 operationalButtonsContainer.addEventListener('click', handleButtonClick);
+buttonDecimalPoint.addEventListener('click', function() {
+    if (isFirstNumber) {
+        number1 += this.textContent;
+    } else {
+        number2 += this.textContent;
+    }
+    addToDisplay(this.textContent);
+    buttonDecimalPoint.classList.add('disabled');
+    isDecimalPointDisabled = true;
+})
 buttonClear.addEventListener('click', () => {
     isSecondNumber = false;
     [number1, number2, operator] = ['0', '', ''];
     displayContainer.textContent = number1;
-    hideErrorMessage();
+    checkDecimalPoint();
 });
 
 //
@@ -98,17 +113,29 @@ function checkErrorMesage(operatorToCheck) {
     }
 }
 
+function enableButtonDecimalPoint() {
+    buttonDecimalPoint.classList.remove('disabled');
+}
+
+function checkDecimalPoint() {
+    if (isDecimalPointDisabled) {
+        enableButtonDecimalPoint()
+    }
+}
+
 function handleOperatorButton(operatorValue) {
     if (checkErrorMesage(operatorValue)) {
         return;
     };
 
+    checkDecimalPoint();
     addToDisplay(operatorValue, gap=true);
 
     if (!isSecondNumber) {
         isFirstNumber = false;
         operator = operatorValue;
     } else {
+
         let result = operate(parseFloat(number1), parseFloat(number2), operator);
 
         displayContainer.textContent = parseFloat(result.toFixed(5));
