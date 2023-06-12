@@ -3,7 +3,9 @@ const OPERATORS = ['+', '-', '*', '/', '='];
 const containerMain = document.createElement('div');
 const containerCalculator = document.createElement('div');
 const containerButtons = document.getElementById('buttons-container');
-const containerOperationalButtons = document.createElement('div');
+/*const containerOperationalButtons = document.createElement('div');*/
+const containerDigitButtons = document.createElement('div');
+const containerOperatorButtons = document.createElement('div');
 const containerDisplay = document.getElementById('display');
 const buttonDecimalPoint = document.createElement('button');
 const buttonClear = document.createElement('button');
@@ -42,7 +44,9 @@ errorZero.textContent = 'It seems you\'re trying to divide by zero. Division by 
 document.body.appendChild(containerMain);
 containerMain.appendChild(containerCalculator);
 containerCalculator.appendChild(containerButtons);
-containerButtons.appendChild(containerOperationalButtons);
+/*containerButtons.appendChild(containerOperationalButtons);*/
+containerButtons.appendChild(containerDigitButtons);
+containerButtons.appendChild(containerOperatorButtons);
 containerButtons.appendChild(buttonDecimalPoint);
 containerButtons.appendChild(buttonClear);
 containerButtons.appendChild(buttonDelete);
@@ -50,7 +54,9 @@ containerCalculator.appendChild(containerErrorMessage);
 containerErrorMessage.appendChild(errorEqual);
 containerErrorMessage.appendChild(errorZero);
 
-containerOperationalButtons.addEventListener('click', handleButtonClick);
+/*containerOperationalButtons.addEventListener('click', handleButtonClick);*/
+containerDigitButtons.addEventListener('click', handleDigitButton);
+containerOperatorButtons.addEventListener('click', handleOperatorButton);
 buttonDecimalPoint.addEventListener('click', function() {
     const symbolPoint = this.textContent;
 
@@ -102,31 +108,19 @@ function checkIfDigit(symbolToCheck) {
     return (!isNaN(parseFloat(symbolToCheck)));
 }
 
-function checkErrorMesage() {
-    if (isError) {
-        hideErrorMessage(); 
-    }
-}
-
 function hideErrorMessage() {
-    Array.from(containerErrorMessage.children).forEach(child => {
-        if (!child.classList.contains('hidden')) {
-            child.classList.add('hidden');
+    Array.from(containerErrorMessage.children).forEach(error=> {
+        if (!error.classList.contains('hidden')) {
+            error.classList.add('hidden');
         }
+
         isError = false;
     });
 }
 
-function handleButtonClick(event) {
-    const buttonValue = event.target.textContent;
-    const isDigit = !isNaN(parseFloat(buttonValue));
-
-    checkErrorMesage();
-
-    if (isDigit) {
-        handleDigitButton(buttonValue);
-    } else {
-        handleOperatorButton(buttonValue);
+function checkErrorMesage() {
+    if (isError) {
+        hideErrorMessage(); 
     }
 }
 
@@ -134,7 +128,9 @@ function addToDisplay(valueToDisplay, gap=false) {
     containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
 }
 
-function handleDigitButton(digitValue) {
+function handleDigitButton(event) {
+    const digitValue = event.target.textContent;
+
     if (operator === null && !isSecondNumber) {
         number1 = digitValue;
         containerDisplay.textContent = number1;
@@ -161,6 +157,11 @@ function handleDigitButton(digitValue) {
 
 function showErrorMessage(errorToShow) {
     errorToShow.classList.remove('hidden');
+    if (errorToShow === errorZero) {
+        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToDisable => {
+            buttonOperatorToDisable.classList.add('disabled');
+        });
+    }
     isError = true;
 }
 
@@ -171,17 +172,23 @@ function checkEqualError(operatorToCheck) {
     }
 }
 
-function enableButtonDecimalPoint() {
-    buttonDecimalPoint.classList.remove('disabled');
+function enableButton(buttonToEnable) {
+    buttonToEnable.classList.remove('disabled');
+}
+
+function disableButton(buttonToDisable) {
+    buttonToDisable.classList.add('disabled');
 }
 
 function checkDecimalPoint() {
     if (isDecimalPointDisabled) {
-        enableButtonDecimalPoint()
+        enableButton(buttonDecimalPoint);
     }
 }
 
-function handleOperatorButton(operatorValue) {
+function handleOperatorButton(event) {
+    const operatorValue = event.target.textContent;
+
     if (checkEqualError(operatorValue)) {
         return;
     };
@@ -198,6 +205,10 @@ function handleOperatorButton(operatorValue) {
 
         containerDisplay.textContent = parseFloat(result.toFixed(5));
         number1 = result;
+        if (!Number.isInteger(result)) {
+            disableButton(buttonDecimalPoint);
+        }
+
         isFirstNumber = true;
         number2 = ''; 
         if (operatorValue !== '=') {
@@ -215,9 +226,10 @@ function createButtonsOperators() {
     for (let i = 0; i < OPERATORS.length; i++) {
         const buttonOperator = document.createElement('button');
 
-        buttonOperator.classList.add('button');
+        buttonOperator.classList.add('button', 'button-operator');
         buttonOperator.textContent = OPERATORS[i];
-        containerOperationalButtons.appendChild(buttonOperator);
+        /*containerOperationalButtons.appendChild(buttonOperator);*/
+        containerOperatorButtons.appendChild(buttonOperator);
     }
 }
 
@@ -227,7 +239,8 @@ function createButtonsDigits() {
 
         buttonDigit.classList.add('button');
         buttonDigit.textContent = i;
-        containerOperationalButtons.appendChild(buttonDigit);
+        /*containerOperationalButtons.appendChild(buttonDigit);*/
+        containerDigitButtons.appendChild(buttonDigit);
     }
 }
 
