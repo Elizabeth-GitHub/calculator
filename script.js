@@ -70,21 +70,22 @@ buttonClear.addEventListener('click', () => {
 
 });
 buttonDelete.addEventListener('click', () => {
-    containerDisplay.textContent = (containerDisplay.textContent.length > 1) ?containerDisplay.textContent.slice(0, -1) : 0;
     
     if (isFirstNumber) {
         number1 = containerDisplay.textContent;
     } else if (isNaN(parseFloat(containerDisplay.textContent[containerDisplay.textContent.length - 1]))) {
         operator = '';
+
+        containerDisplay.textContent = containerDisplay.textContent.slice(0, containerDisplay.textContent.length - 2);
     } else {
         const regex = /\d+$/;
-        const match = containerDisplay.textContent.match(regex);
-        console.log(`match: ${match[0]}`);
+        const match = containerDisplay.textContent.slice(0, containerDisplay.textContent.length - 1).match(regex);
         
         number2 = match ? match[0] : '';
         console.log(`number2: ${number2}`);
     }
 
+    containerDisplay.textContent = (containerDisplay.textContent.length > 1) ?containerDisplay.textContent.slice(0, -1) : 0;
 })
 
 //
