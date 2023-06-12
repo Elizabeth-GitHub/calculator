@@ -72,17 +72,22 @@ buttonClear.addEventListener('click', () => {
 buttonDelete.addEventListener('click', () => {
     
     if (isFirstNumber) {
-        number1 = containerDisplay.textContent;
+        number1 = (containerDisplay.textContent.length > 1) ?containerDisplay.textContent.slice(0, -1) : 0;
     } else if (isNaN(parseFloat(containerDisplay.textContent[containerDisplay.textContent.length - 1]))) {
         operator = '';
+        isFirstNumber = true;
 
         containerDisplay.textContent = containerDisplay.textContent.slice(0, containerDisplay.textContent.length - 2);
     } else {
         const regex = /\d+$/;
         const match = containerDisplay.textContent.slice(0, containerDisplay.textContent.length - 1).match(regex);
         
-        number2 = match ? match[0] : '';
-        console.log(`number2: ${number2}`);
+        if (match) {
+            number2 = match[0];
+        } else {
+            isSecondNumber = false;
+            number2 = '';
+        }
     }
 
     containerDisplay.textContent = (containerDisplay.textContent.length > 1) ?containerDisplay.textContent.slice(0, -1) : 0;
@@ -189,6 +194,7 @@ function handleOperatorButton(operatorValue) {
         number2 = ''; 
         if (operatorValue !== '=') {
             operator = operatorValue;
+            isFirstNumber = false;
             addToDisplay(operatorValue, gap=true);
         } else {
             isSecondNumber = false;
