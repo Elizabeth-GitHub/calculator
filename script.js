@@ -52,12 +52,15 @@ containerErrorMessage.appendChild(errorZero);
 
 containerOperationalButtons.addEventListener('click', handleButtonClick);
 buttonDecimalPoint.addEventListener('click', function() {
+    const symbolPoint = this.textContent;
+
     if (isFirstNumber) {
-        number1 += this.textContent;
+        number1 += symbolPoint;
     } else {
-        number2 += this.textContent;
+        number2 += symbolPoint;
     }
-    addToDisplay(this.textContent);
+
+    addToDisplay(symbolPoint);
     buttonDecimalPoint.classList.add('disabled');
     isDecimalPointDisabled = true;
 })
@@ -67,33 +70,38 @@ buttonClear.addEventListener('click', () => {
     containerDisplay.textContent = number1;
     checkDecimalPoint();
     checkErrorMesage();
-
 });
 buttonDelete.addEventListener('click', () => {
-    
+    const currentDisplayLength = containerDisplay.textContent.length;
+    const lastSymbol = containerDisplay.textContent[currentDisplayLength- 1];
+    const displayWithoutLastSymbol = containerDisplay.textContent.slice(0, -1);
+    const finalDisplay = (currentDisplayLength > 1) ? displayWithoutLastSymbol : 0;
+
     if (isFirstNumber) {
-        number1 = (containerDisplay.textContent.length > 1) ?containerDisplay.textContent.slice(0, -1) : 0;
-    } else if (isNaN(parseFloat(containerDisplay.textContent[containerDisplay.textContent.length - 1]))) {
+        number1 = finalDisplay;
+    } else if (!checkIfDigit(lastSymbol)) {
         operator = '';
         isFirstNumber = true;
-
-        containerDisplay.textContent = containerDisplay.textContent.slice(0, containerDisplay.textContent.length - 2);
     } else {
         const regex = /\d+$/;
-        const match = containerDisplay.textContent.slice(0, containerDisplay.textContent.length - 1).match(regex);
-        
-        if (match) {
-            number2 = match[0];
+        const symbolsBeforeOperator = displayWithoutLastSymbol.match(regex);
+
+        if (symbolsBeforeOperator) {
+            number2 = symbolsBeforeOperator[0]; // digital value of match
         } else {
             isSecondNumber = false;
             number2 = '';
         }
     }
 
-    containerDisplay.textContent = (containerDisplay.textContent.length > 1) ?containerDisplay.textContent.slice(0, -1) : 0;
+    containerDisplay.textContent = finalDisplay;
 })
 
 //
+function checkIfDigit(symbolToCheck) {
+    return (!isNaN(parseFloat(symbolToCheck)));
+}
+
 function checkErrorMesage() {
     if (isError) {
         hideErrorMessage(); 
