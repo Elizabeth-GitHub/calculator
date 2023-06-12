@@ -7,6 +7,7 @@ const containerOperationalButtons = document.createElement('div');
 const containerDisplay = document.getElementById('display');
 const buttonDecimalPoint = document.createElement('button');
 const buttonClear = document.createElement('button');
+const buttonDelete = document.createElement('button');
 const containerErrorMessage = document.createElement('div');
 const errorEqual = document.createElement('p');
 const errorZero = document.createElement('p');
@@ -30,6 +31,8 @@ buttonDecimalPoint.classList.add('button');
 buttonDecimalPoint.textContent = '.';
 buttonClear.classList.add('button');
 buttonClear.textContent = 'CLEAR';
+buttonDelete.classList.add('button');
+buttonDelete.textContent = 'DELETE';
 errorEqual.classList.add('hidden');
 errorZero.classList.add('hidden');
 errorEqual.textContent = 'Incorrect action. Perform a calculation first.'
@@ -42,6 +45,7 @@ containerCalculator.appendChild(containerButtons);
 containerButtons.appendChild(containerOperationalButtons);
 containerButtons.appendChild(buttonDecimalPoint);
 containerButtons.appendChild(buttonClear);
+containerButtons.appendChild(buttonDelete);
 containerCalculator.appendChild(containerErrorMessage);
 containerErrorMessage.appendChild(errorEqual);
 containerErrorMessage.appendChild(errorZero);
@@ -65,6 +69,23 @@ buttonClear.addEventListener('click', () => {
     checkErrorMesage();
 
 });
+buttonDelete.addEventListener('click', () => {
+    containerDisplay.textContent = (containerDisplay.textContent.length > 1) ?containerDisplay.textContent.slice(0, -1) : 0;
+    
+    if (isFirstNumber) {
+        number1 = containerDisplay.textContent;
+    } else if (isNaN(parseFloat(containerDisplay.textContent[containerDisplay.textContent.length - 1]))) {
+        operator = '';
+    } else {
+        const regex = /\d+$/;
+        const match = containerDisplay.textContent.match(regex);
+        console.log(`match: ${match[0]}`);
+        
+        number2 = match ? match[0] : '';
+        console.log(`number2: ${number2}`);
+    }
+
+})
 
 //
 function checkErrorMesage() {
@@ -113,8 +134,14 @@ function handleDigitButton(digitValue) {
             showErrorMessage(errorZero);
             return;
         }
-        number2 += digitValue;
-        addToDisplay(digitValue);
+
+        if (number2 === '0') {
+            number2 = digitValue;
+            containerDisplay.textContent = containerDisplay.textContent.slice(0, length - 2) + digitValue;
+        } else {
+            number2 += digitValue;
+            addToDisplay(digitValue);
+        }
     }
 }
 
