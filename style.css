@@ -1,6 +1,15 @@
 .container {
     display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
+
+.button {
+    width: 5rem;
+    height: 5rem;
+}
+
 .disabled {
     opacity: 0.5;
     pointer-events: none;
@@ -9,3 +18,25 @@
 .hidden {
     display: none;
 }
+
+#container-main {
+    height: 100vh;;
+}
+
+#container-calculator {
+    border: 1px solid green;
+    width: 25vw;
+}
+
+#container-upperbuttons {
+    flex-direction: row;;
+}
+
+#container-digitbuttons {
+    flex-wrap: wrap-reverse;
+    flex-direction: row;
+    border: 2px solid pink;
+    width: calc(50% - 20px);
+}
+
+

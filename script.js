@@ -3,17 +3,27 @@ const OPERATORS = ['+', '-', '*', '/', '='];
 const containerMain = document.createElement('div');
 const containerCalculator = document.createElement('div');
 const containerButtons = document.getElementById('buttons-container');
-/*const containerOperationalButtons = document.createElement('div');*/
+const containerUpperButtons = document.createElement('div');
 const containerDigitButtons = document.createElement('div');
 const containerOperatorButtons = document.createElement('div');
 const containerDisplay = document.getElementById('display');
 const buttonDecimalPoint = document.createElement('button');
+const buttonEqual = document.createElement('button');
 const buttonClear = document.createElement('button');
 const buttonDelete = document.createElement('button');
 const containerErrorMessage = document.createElement('div');
 const errorEqual = document.createElement('p');
 const errorZero = document.createElement('p');
-const containers = document.querySelectorAll('div');;
+const containers = [
+    containerMain,
+    containerCalculator,
+    containerButtons,
+    containerUpperButtons,
+    containerDigitButtons,
+    containerOperatorButtons,
+    containerErrorMessage
+  ];
+  
 
 let isFirstNumber = true;
 let isOperator = false;
@@ -30,8 +40,17 @@ createButtonsDigits();
 containers.forEach(container => {
     container.classList.add('container');
 });
+containerMain.setAttribute('id', 'container-main');
+containerDisplay.classList.add('container');
+containerCalculator.setAttribute('id', 'container-calculator');
+containerUpperButtons.setAttribute('id', 'container-upperbuttons');
+containerDigitButtons.setAttribute('id', 'container-digitbuttons');
+buttonDecimalPoint.setAttribute('id', 'button-decimalpoint');
 buttonDecimalPoint.classList.add('button');
 buttonDecimalPoint.textContent = '.';
+buttonEqual.setAttribute('id', 'button-equal');
+buttonEqual.classList.add('button');
+buttonEqual.textContent = '=';
 buttonClear.classList.add('button');
 buttonClear.textContent = 'CLEAR';
 buttonDelete.classList.add('button');
@@ -42,15 +61,18 @@ errorEqual.textContent = 'Incorrect action. Perform a calculation first.'
 errorZero.textContent = 'It seems you\'re trying to divide by zero. Division by zero is not allowed in this calculator.\
                         Please choose a non-zero value as the divisor to proceed with the division operation.'
 
+
 document.body.appendChild(containerMain);
 containerMain.appendChild(containerCalculator);
+containerCalculator.appendChild(containerDisplay);
 containerCalculator.appendChild(containerButtons);
-/*containerButtons.appendChild(containerOperationalButtons);*/
+containerButtons.appendChild(containerUpperButtons);
+containerUpperButtons.appendChild(buttonClear);
+containerUpperButtons.appendChild(buttonDelete);
 containerButtons.appendChild(containerDigitButtons);
 containerButtons.appendChild(containerOperatorButtons);
-containerButtons.appendChild(buttonDecimalPoint);
-containerButtons.appendChild(buttonClear);
-containerButtons.appendChild(buttonDelete);
+
+
 containerCalculator.appendChild(containerErrorMessage);
 containerErrorMessage.appendChild(errorEqual);
 containerErrorMessage.appendChild(errorZero);
@@ -78,31 +100,6 @@ buttonClear.addEventListener('click', () => {
     checkErrorMesage();
 });
 buttonDelete.addEventListener('click', deleteLastSymbol);
-/*buttonDelete.addEventListener('click', () => {
-    const currentDisplayLength = containerDisplay.textContent.length;
-    const lastSymbol = containerDisplay.textContent[currentDisplayLength- 1];
-    const displayWithoutLastSymbol = containerDisplay.textContent.slice(0, -1);
-    const finalDisplay = (currentDisplayLength > 1) ? displayWithoutLastSymbol : 0;
-
-    if (isFirstNumber) {
-        number1 = finalDisplay;
-    } else if (!checkIfDigit(lastSymbol)) {
-        operator = '';
-        isFirstNumber = true;
-    } else {
-        const regex = /\d+$/;
-        const symbolsBeforeOperator = displayWithoutLastSymbol.match(regex);
-
-        if (symbolsBeforeOperator) {
-            number2 = symbolsBeforeOperator[0]; // digital value of match
-        } else {
-            isSecondNumber = false;
-            number2 = '';
-        }
-    }
-
-    containerDisplay.textContent = finalDisplay;
-})*/
 
 //
 function deleteLastSymbol() {
@@ -262,7 +259,8 @@ function handleOperatorButton(event) {
 }
 
 function createButtonsOperators() {
-    for (let i = 0; i < OPERATORS.length; i++) {
+    
+    for (let i = 1; i < OPERATORS.length; i++) {
         const buttonOperator = document.createElement('button');
 
         buttonOperator.classList.add('button', 'button-operator');
@@ -271,14 +269,24 @@ function createButtonsOperators() {
     }
 }
 
-function createButtonsDigits() {
-    for (let i = 0; i < 10; i++) {
-        const buttonDigit = document.createElement('button');
+function createButtonsDigits() {  
+    containerDigitButtons.appendChild(buttonDecimalPoint);
 
-        buttonDigit.classList.add('button');
-        buttonDigit.textContent = i;
-        containerDigitButtons.appendChild(buttonDigit);
-    }
+    const buttonZero = document.createElement('button');
+
+    buttonZero.classList.add('button');
+    buttonZero.textContent = '0';
+    containerDigitButtons.appendChild(buttonZero);
+
+    containerDigitButtons.appendChild(buttonEqual);
+
+   for (let i = 1; i < 10; i++) {
+    const buttonDigit = document.createElement('button');
+
+    buttonDigit.classList.add('button', 'button-digits');
+    buttonDigit.textContent = i;
+    containerDigitButtons.appendChild(buttonDigit);
+    }  
 }
 
 function operate(element1, element2, symbol) {
