@@ -199,33 +199,28 @@ function addToDisplay(valueToDisplay, gap=false) {
 function handleDigitButton(clickedDigit) {
     const digitValue = clickedDigit.textContent;
 
-    if (isOperator && !isSecondNumber) {
+    if (isFirstNumber) {  // Working with the first number
+        if (number1 === '0') {
+            if (digitValue !== '0') {
+                number1 = digitValue;
+                containerDisplay.textContent = number1;
+            }
+        } else {
+            number1 += digitValue;
+            addToDisplay(digitValue);
+        }
+    } else if (isOperator && !isSecondNumber) { // Start of the second number;
         isOperator = false;
         isSecondNumber = true;
 
-        if (number2 === '0') {
-            number2 = digitValue;
-            containerDisplay.textContent = containerDisplay.textContent.slice(0, length - 2) + digitValue;
-        } else {
-            number2 += digitValue;
-            addToDisplay(digitValue);
-        }
-    }
-    else if (operator === '=' && !isSecondNumber) {
-        number1 = digitValue;
-        containerDisplay.textContent = number1;
-        operator = '';
-    } else if (isFirstNumber) {
-        number1 = (number1 === '0' && digitValue === '0') ? '0' : (number1 === '0' ? digitValue : `${number1}${digitValue}`); 
-        containerDisplay.textContent = number1;
-    } else {
-        isSecondNumber = true;
-        isOperator = false;
-        if (number2 === '' && digitValue === '0' && operator === '/') {
+        if (digitValue === '0' && operator === '/') {
             showErrorMessage(errorZero);
             return;
         }
 
+        number2 = digitValue;
+        addToDisplay(digitValue);
+    } else  {
         if (number2 === '0') {
             number2 = digitValue;
             containerDisplay.textContent = containerDisplay.textContent.slice(0, length - 2) + digitValue;
@@ -233,8 +228,30 @@ function handleDigitButton(clickedDigit) {
             number2 += digitValue;
             addToDisplay(digitValue);
         }
-    }
+    
 }
+}
+
+
+
+
+
+        /*if (number2 === '0') {
+            number2 = digitValue;
+            containerDisplay.textContent = containerDisplay.textContent.slice(0, length - 2) + digitValue;
+        } else {
+            number2 += digitValue;
+            addToDisplay(digitValue);
+        }*/
+    /*}
+   else if (operator === '=' && !isSecondNumber) {
+        number1 = digitValue;
+        containerDisplay.textContent = number1;
+        operator = '';*/
+   /* } else if (isFirstNumber) {
+        number1 = (number1 === '0' && digitValue === '0') ? '0' : (number1 === '0' ? digitValue : `${number1}${digitValue}`); 
+        containerDisplay.textContent = number1;*/
+    
 
 function showErrorMessage(errorToShow) {
     errorToShow.classList.remove('hidden');
@@ -267,14 +284,13 @@ function handleOperatorButton(event) {
     checkDecimalPoint();
 
     if (!isSecondNumber) {
-        isFirstNumber = false;
-        
+        isFirstNumber = false;       
     } else {
         getResult();
-        console.log('else');
-        isOperator = true;
         operator = operatorValue;
     }
+
+    isOperator = true;
     operator = operatorValue;
     addToDisplay(operatorValue, gap=true);
 
@@ -306,7 +322,7 @@ function createButtonsDigits() {
 
     const buttonZero = document.createElement('button');
 
-    buttonZero.classList.add('button');
+    buttonZero.classList.add('button', 'button-digits');
     buttonZero.textContent = '0';
     containerDigitButtons.appendChild(buttonZero);
 
