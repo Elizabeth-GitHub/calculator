@@ -31,6 +31,7 @@ let isFirstNumber = true;
 let isOperator = false;
 let isSecondNumber = false;
 let isDecimalPointDisabled = false;
+let isEqualError = false;
 let isError = false;
 let number1 = '0';
 let number2 = '';
@@ -78,7 +79,7 @@ containerLowerButtons.appendChild(containerOperatorButtons);
 containerCalculator.appendChild(containerErrorMessage);
 containerErrorMessage.appendChild(errorEqual);
 containerErrorMessage.appendChild(errorZero);
-
+//
 containerDigitButtons.addEventListener('click', function(event) {
     const clickedButton = event.target;
 
@@ -86,6 +87,8 @@ containerDigitButtons.addEventListener('click', function(event) {
       handleDigitButton(clickedButton);
     } else if (clickedButton === buttonDecimalPoint) {
         handleDecimalPointButton();
+    } else {
+        handleEqualSign();
     }
 });
 containerOperatorButtons.addEventListener('click', handleOperatorButton);
@@ -98,8 +101,35 @@ buttonClear.addEventListener('click', () => {
     checkErrorMesage();
 });
 buttonDelete.addEventListener('click', deleteLastSymbol);
-
 //
+function getResult() {
+    let result = operate(parseFloat(number1), parseFloat(number2), operator);
+
+    containerDisplay.textContent = parseFloat(result.toFixed(5));
+    
+    number1 = result;
+    number2 = ''; 
+    isFirstNumber = true;
+    isOperator = false;
+    isSecondNumber = false;
+
+    if (!Number.isInteger(result)) {
+        disableButton(buttonDecimalPoint);
+        isDecimalPointDisabled = true;
+    }    
+}
+
+
+function handleEqualSign(){
+    if (!isSecondNumber) {
+        showErrorMessage(errorEqual);
+        isEqualError = true;
+        return;
+    }
+
+    getResult();
+}
+
 function handleDecimalPointButton() {
     const symbolPoint = buttonDecimalPoint.textContent;
 
@@ -169,7 +199,19 @@ function addToDisplay(valueToDisplay, gap=false) {
 function handleDigitButton(clickedDigit) {
     const digitValue = clickedDigit.textContent;
 
-    if (operator === '=' && !isSecondNumber) {
+    if (isOperator && !isSecondNumber) {
+        isOperator = false;
+        isSecondNumber = true;
+
+        if (number2 === '0') {
+            number2 = digitValue;
+            containerDisplay.textContent = containerDisplay.textContent.slice(0, length - 2) + digitValue;
+        } else {
+            number2 += digitValue;
+            addToDisplay(digitValue);
+        }
+    }
+    else if (operator === '=' && !isSecondNumber) {
         number1 = digitValue;
         containerDisplay.textContent = number1;
         operator = '';
@@ -204,13 +246,6 @@ function showErrorMessage(errorToShow) {
     isError = true;
 }
 
-function checkEqualError(operatorToCheck) {
-    if (operatorToCheck === '=' && !isSecondNumber) {
-        showErrorMessage(errorEqual);
-        return true;
-    }
-}
-
 function enableButton(buttonToEnable) {
     buttonToEnable.classList.remove('disabled');
 }
@@ -229,45 +264,30 @@ function checkDecimalPoint() {
 function handleOperatorButton(event) {
     const operatorValue = event.target.textContent;
 
-    if (checkEqualError(operatorValue)) {
-        return;
-    };
-
     checkDecimalPoint();
-    if (operatorValue !== '=') {
-        if (!isOperator) {
-            addToDisplay(operatorValue, gap=true);
-            isOperator = true;
-        } else {
-        deleteLastSymbol();
-        addToDisplay(operatorValue, gap=true);
-        }
-    }
 
     if (!isSecondNumber) {
         isFirstNumber = false;
-        operator = operatorValue;
+        
     } else {
-        let result = operate(parseFloat(number1), parseFloat(number2), operator);
-
-        containerDisplay.textContent = parseFloat(result.toFixed(5));
-        
-        number1 = result;
+        getResult();
+        console.log('else');
+        isOperator = true;
         operator = operatorValue;
-        number2 = ''; 
-
-        if (!Number.isInteger(result)) {
-            disableButton(buttonDecimalPoint);
-            isDecimalPointDisabled = true;
-        }
-        
-        if (operator !== '=') { 
-            addToDisplay(operator, gap=true);
-        } else {
-            isFirstNumber = true;
-            isSecondNumber = false;
-        }
     }
+    operator = operatorValue;
+    addToDisplay(operatorValue, gap=true);
+
+    /*if (!isOperator) {
+        console.log('!isOperator')
+        addToDisplay(operatorValue, gap=true);
+        isOperator = true;
+    } else {
+        deleteLastSymbol();
+        addToDisplay(operatorValue, gap=true);
+    }*/
+
+    
 }
 
 function createButtonsOperators() {
