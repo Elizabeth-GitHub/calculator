@@ -46,6 +46,7 @@ containers.forEach(container => {
 containerMain.setAttribute('id', 'container-main');
 containerDisplay.classList.add('container');
 containerCalculator.setAttribute('id', 'container-calculator');
+containerDisplay.setAttribute('id', 'container-display');
 containerUpperButtons.setAttribute('id', 'container-upperbuttons');
 containerLowerButtons.setAttribute('id', 'container-lowerbuttons');
 containerDigitButtons.setAttribute('id', 'container-digitbuttons');

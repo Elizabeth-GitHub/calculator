@@ -28,7 +28,17 @@
 
 #container-calculator {
     border: 1px solid green;
+    border-radius: 5%;
+    background-color: peachpuff;
     width: 25vw;
+    height: 30vw;
+}
+#container-display {
+    margin-bottom: 1rem;
+    border: 1px solid black;
+    width: 15vw;
+    align-items: flex-end;
+    
 }
 
 #container-upperbuttons {
