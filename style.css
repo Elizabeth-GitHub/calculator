@@ -3,6 +3,8 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    margin: 0;
+    padding: 0;
 }
 
 .button {
@@ -32,11 +34,14 @@
     flex-direction: row;;
 }
 
+#container-lowerbuttons {
+    flex-direction: row;;
+}
+
 #container-digitbuttons {
     flex-wrap: wrap-reverse;
     flex-direction: row;
-    border: 2px solid pink;
-    width: calc(50% - 20px);
+    width: 15rem;
 }
 
 

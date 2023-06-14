@@ -4,6 +4,7 @@ const containerMain = document.createElement('div');
 const containerCalculator = document.createElement('div');
 const containerButtons = document.getElementById('buttons-container');
 const containerUpperButtons = document.createElement('div');
+const containerLowerButtons = document.createElement('div'); 
 const containerDigitButtons = document.createElement('div');
 const containerOperatorButtons = document.createElement('div');
 const containerDisplay = document.getElementById('display');
@@ -19,6 +20,7 @@ const containers = [
     containerCalculator,
     containerButtons,
     containerUpperButtons,
+    containerLowerButtons,
     containerDigitButtons,
     containerOperatorButtons,
     containerErrorMessage
@@ -44,6 +46,7 @@ containerMain.setAttribute('id', 'container-main');
 containerDisplay.classList.add('container');
 containerCalculator.setAttribute('id', 'container-calculator');
 containerUpperButtons.setAttribute('id', 'container-upperbuttons');
+containerLowerButtons.setAttribute('id', 'container-lowerbuttons');
 containerDigitButtons.setAttribute('id', 'container-digitbuttons');
 buttonDecimalPoint.setAttribute('id', 'button-decimalpoint');
 buttonDecimalPoint.classList.add('button');
@@ -69,10 +72,9 @@ containerCalculator.appendChild(containerButtons);
 containerButtons.appendChild(containerUpperButtons);
 containerUpperButtons.appendChild(buttonClear);
 containerUpperButtons.appendChild(buttonDelete);
-containerButtons.appendChild(containerDigitButtons);
-containerButtons.appendChild(containerOperatorButtons);
-
-
+containerButtons.appendChild(containerLowerButtons);
+containerLowerButtons.appendChild(containerDigitButtons);
+containerLowerButtons.appendChild(containerOperatorButtons);
 containerCalculator.appendChild(containerErrorMessage);
 containerErrorMessage.appendChild(errorEqual);
 containerErrorMessage.appendChild(errorZero);
