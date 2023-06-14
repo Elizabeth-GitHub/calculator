@@ -79,21 +79,17 @@ containerCalculator.appendChild(containerErrorMessage);
 containerErrorMessage.appendChild(errorEqual);
 containerErrorMessage.appendChild(errorZero);
 
-containerDigitButtons.addEventListener('click', handleDigitButton);
-containerOperatorButtons.addEventListener('click', handleOperatorButton);
-buttonDecimalPoint.addEventListener('click', function() {
-    const symbolPoint = this.textContent;
+containerDigitButtons.addEventListener('click', function(event) {
+    const clickedButton = event.target;
 
-    if (isFirstNumber) {
-        number1 += symbolPoint;
-    } else {
-        number2 += symbolPoint;
+    if (clickedButton.classList.contains('button-digits')) {
+      handleDigitButton(clickedButton);
+    } else if (clickedButton === buttonDecimalPoint) {
+        handleDecimalPointButton();
     }
+});
+containerOperatorButtons.addEventListener('click', handleOperatorButton);
 
-    addToDisplay(symbolPoint);
-    disableButton(buttonDecimalPoint);
-    isDecimalPointDisabled = true;
-})
 buttonClear.addEventListener('click', () => {
     isSecondNumber = false;
     [number1, number2, operator] = ['0', '', ''];
@@ -104,6 +100,20 @@ buttonClear.addEventListener('click', () => {
 buttonDelete.addEventListener('click', deleteLastSymbol);
 
 //
+function handleDecimalPointButton() {
+    const symbolPoint = buttonDecimalPoint.textContent;
+
+    if (isFirstNumber) {
+        number1 += symbolPoint;
+    } else {
+        number2 += symbolPoint;
+    }
+
+    addToDisplay(symbolPoint);
+    disableButton(buttonDecimalPoint);
+    isDecimalPointDisabled = true;
+}
+
 function deleteLastSymbol() {
     const currentDisplayLength = containerDisplay.textContent.length;
     const lastSymbol = containerDisplay.textContent[currentDisplayLength- 1];
@@ -156,8 +166,8 @@ function addToDisplay(valueToDisplay, gap=false) {
     containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
 }
 
-function handleDigitButton(event) {
-    const digitValue = event.target.textContent;
+function handleDigitButton(clickedDigit) {
+    const digitValue = clickedDigit.textContent;
 
     if (operator === '=' && !isSecondNumber) {
         number1 = digitValue;
@@ -262,7 +272,7 @@ function handleOperatorButton(event) {
 
 function createButtonsOperators() {
     
-    for (let i = 1; i < OPERATORS.length; i++) {
+    for (let i = 0; i < OPERATORS.length; i++) {
         const buttonOperator = document.createElement('button');
 
         buttonOperator.classList.add('button', 'button-operator');
