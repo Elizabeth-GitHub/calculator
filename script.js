@@ -172,7 +172,7 @@ function deleteLastSymbol() {
         const symbolsBeforeOperator = displayWithoutLastSymbol.match(regex);
 
         if (symbolsBeforeOperator) {
-            number2 = symbolsBeforeOperator[0]; // digital value of match
+            number2 = symbolsBeforeOperator[0]; // Digital value of match
         } else {
             isSecondNumber = false;
             number2 = '';
@@ -291,6 +291,11 @@ function checkDecimalPoint() {
 function handleOperatorButton(event) {
     const operatorValue = event.target.textContent;
 
+    if (isOperator) { // Display and use the last operator if the user has clicked more than one in a row
+        deleteLastSymbol();
+    }
+
+    addToDisplay(operatorValue, gap=true)
     checkDecimalPoint();
 
     if (!isSecondNumber) {
@@ -299,19 +304,7 @@ function handleOperatorButton(event) {
         getResult(isAfterEqualClick=false);
     }
 
-    operator = operatorValue;
-    addToDisplay(operatorValue, gap=true);
-
-    /*if (!isOperator) {
-        console.log('!isOperator')
-        addToDisplay(operatorValue, gap=true);
-        isOperator = true;
-    } else {
-        deleteLastSymbol();
-        addToDisplay(operatorValue, gap=true);
-    }*/
-
-    
+    operator = operatorValue;  
 }
 
 function createButtonsOperators() {
