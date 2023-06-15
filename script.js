@@ -103,16 +103,25 @@ buttonClear.addEventListener('click', () => {
 });
 buttonDelete.addEventListener('click', deleteLastSymbol);
 //
-function getResult() {
+function shiftFromFirstToOperator() {
+    isFirstNumber = false;
+    isOperator = true;
+}
+
+function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when we enter the function after the clicking '=', false after clicking any other operator.
     let result = operate(parseFloat(number1), parseFloat(number2), operator);
 
     containerDisplay.textContent = parseFloat(result.toFixed(5));
     
     number1 = result;
     number2 = ''; 
-    isFirstNumber = true;
-    isOperator = false;
-    isSecondNumber = false;
+    if (isAfterEqualClick) {
+        isFirstNumber = true;
+        isOperator = false;
+        isSecondNumber = false;
+    } else {
+        shiftFromFirstToOperator();
+    }
 
     if (!Number.isInteger(result)) {
         disableButton(buttonDecimalPoint);
@@ -285,13 +294,11 @@ function handleOperatorButton(event) {
     checkDecimalPoint();
 
     if (!isSecondNumber) {
-        isFirstNumber = false;       
+        shiftFromFirstToOperator();   
     } else {
-        getResult();
-        operator = operatorValue;
+        getResult(isAfterEqualClick=false);
     }
 
-    isOperator = true;
     operator = operatorValue;
     addToDisplay(operatorValue, gap=true);
 
