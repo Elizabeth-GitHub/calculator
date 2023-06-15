@@ -81,6 +81,12 @@ containerCalculator.appendChild(containerErrorMessage);
 containerErrorMessage.appendChild(errorEqual);
 containerErrorMessage.appendChild(errorZero);
 //
+containerButtons.addEventListener('click', (event) => {
+    if (isEqualError && event.target.textContent !== '=') {
+        hideErrorMessage(errorEqual);
+        isEqualError = false;
+    }
+})
 containerDigitButtons.addEventListener('click', function(event) {
     const clickedButton = event.target;
 
@@ -99,7 +105,7 @@ buttonClear.addEventListener('click', () => {
     [number1, number2, operator] = ['0', '', ''];
     containerDisplay.textContent = number1;
     checkDecimalPoint();
-    checkErrorMesage();
+    /*checkErrorMesage();*/
 });
 buttonDelete.addEventListener('click', deleteLastSymbol);
 //
@@ -186,21 +192,15 @@ function checkIfDigit(symbolToCheck) {
     return (!isNaN(parseFloat(symbolToCheck)));
 }
 
-function hideErrorMessage() {
-    Array.from(containerErrorMessage.children).forEach(error=> {
-        if (!error.classList.contains('hidden')) {
-            error.classList.add('hidden');
-        }
-
-        isError = false;
-    });
+function hideErrorMessage(errorToHide) {
+    errorToHide.classList.add('hidden');
 }
 
-function checkErrorMesage() {
+/*function checkErrorMesage() {
     if (isError) {
         hideErrorMessage(); 
     }
-}
+}*/
 
 function addToDisplay(valueToDisplay, gap=false) {
     containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
@@ -219,7 +219,7 @@ function handleDigitButton(clickedDigit) {
             number1 += digitValue;
             addToDisplay(digitValue);
         }
-    } else if (isOperator && !isSecondNumber) { // Start of the second number;
+    } else if (isOperator && !isSecondNumber) { // Start of the second number
         isOperator = false;
         isSecondNumber = true;
 
@@ -230,38 +230,16 @@ function handleDigitButton(clickedDigit) {
 
         number2 = digitValue;
         addToDisplay(digitValue);
-    } else  {
+    } else  {  // Continue the second number
         if (number2 === '0') {
             number2 = digitValue;
             containerDisplay.textContent = containerDisplay.textContent.slice(0, length - 2) + digitValue;
         } else {
             number2 += digitValue;
             addToDisplay(digitValue);
-        }
-    
-}
-}
-
-
-
-
-
-        /*if (number2 === '0') {
-            number2 = digitValue;
-            containerDisplay.textContent = containerDisplay.textContent.slice(0, length - 2) + digitValue;
-        } else {
-            number2 += digitValue;
-            addToDisplay(digitValue);
-        }*/
-    /*}
-   else if (operator === '=' && !isSecondNumber) {
-        number1 = digitValue;
-        containerDisplay.textContent = number1;
-        operator = '';*/
-   /* } else if (isFirstNumber) {
-        number1 = (number1 === '0' && digitValue === '0') ? '0' : (number1 === '0' ? digitValue : `${number1}${digitValue}`); 
-        containerDisplay.textContent = number1;*/
-    
+        }  
+    }
+} 
 
 function showErrorMessage(errorToShow) {
     errorToShow.classList.remove('hidden');
