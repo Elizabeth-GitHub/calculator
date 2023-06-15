@@ -1,4 +1,4 @@
-const OPERATORS = ['+', '-', '*', '/', '='];
+const OPERATORS = ['+', '-', '*', '/'];
 
 const containerMain = document.createElement('div');
 const containerCalculator = document.createElement('div');
@@ -32,7 +32,8 @@ let isOperator = false;
 let isSecondNumber = false;
 let isDecimalPointDisabled = false;
 let isEqualError = false;
-let isError = false;
+let isZeroError = false;
+let isResult = false;
 let number1 = '0';
 let number2 = '';
 let operator = '';
@@ -84,7 +85,6 @@ containerErrorMessage.appendChild(errorZero);
 containerButtons.addEventListener('click', (event) => {
     if (isEqualError && event.target.textContent !== '=') {
         hideErrorMessage(errorEqual);
-        isEqualError = false;
     }
 })
 containerDigitButtons.addEventListener('click', function(event) {
@@ -105,7 +105,6 @@ buttonClear.addEventListener('click', () => {
     [number1, number2, operator] = ['0', '', ''];
     containerDisplay.textContent = number1;
     checkDecimalPoint();
-    /*checkErrorMesage();*/
 });
 buttonDelete.addEventListener('click', deleteLastSymbol);
 //
@@ -120,11 +119,13 @@ function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when w
     containerDisplay.textContent = parseFloat(result.toFixed(5));
     
     number1 = result;
+    isResult = true;
     number2 = ''; 
+    isSecondNumber = false;
+
     if (isAfterEqualClick) {
         isFirstNumber = true;
         isOperator = false;
-        isSecondNumber = false;
     } else {
         shiftFromFirstToOperator();
     }
@@ -168,6 +169,9 @@ function deleteLastSymbol() {
 
     if (isFirstNumber) {
         number1 = finalDisplay;
+    } else if (isZeroError) {
+        containerDisplay.textContent = containerDisplay.textContent.slice(0, currentDisplayLength - 1);
+        return;
     } else if (!checkIfDigit(lastSymbol)) {
         operator = '';
         isFirstNumber = true;
@@ -194,13 +198,20 @@ function checkIfDigit(symbolToCheck) {
 
 function hideErrorMessage(errorToHide) {
     errorToHide.classList.add('hidden');
-}
 
-/*function checkErrorMesage() {
-    if (isError) {
-        hideErrorMessage(); 
+    if (errorToHide === errorZero) {
+        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToDisable => {
+            buttonOperatorToDisable.disabled = false;
+        });
+
+        buttonEqual.disabled = false;
+
+        isZeroError = false;
+    } else {
+        isEqualError = false;
     }
-}*/
+    
+}
 
 function addToDisplay(valueToDisplay, gap=false) {
     containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
@@ -215,6 +226,10 @@ function handleDigitButton(clickedDigit) {
                 number1 = digitValue;
                 containerDisplay.textContent = number1;
             }
+        } else if (isResult) {
+            number1 = digitValue;
+            containerDisplay.textContent = number1;
+            isResult = false;
         } else {
             number1 += digitValue;
             addToDisplay(digitValue);
@@ -222,33 +237,36 @@ function handleDigitButton(clickedDigit) {
     } else if (isOperator && !isSecondNumber) { // Start of the second number
         isOperator = false;
         isSecondNumber = true;
+        addToDisplay(digitValue);
+        number2 = digitValue;
 
         if (digitValue === '0' && operator === '/') {
             showErrorMessage(errorZero);
+            isZeroError = true;
             return;
-        }
-
-        number2 = digitValue;
-        addToDisplay(digitValue);
+        }    
     } else  {  // Continue the second number
         if (number2 === '0') {
             number2 = digitValue;
-            containerDisplay.textContent = containerDisplay.textContent.slice(0, length - 2) + digitValue;
+            deleteLastSymbol();
+            hideErrorMessage(errorZero);
         } else {
             number2 += digitValue;
-            addToDisplay(digitValue);
         }  
+        addToDisplay(digitValue);
     }
 } 
 
 function showErrorMessage(errorToShow) {
     errorToShow.classList.remove('hidden');
+
     if (errorToShow === errorZero) {
         Array.from(containerOperatorButtons.children).forEach(buttonOperatorToDisable => {
-            buttonOperatorToDisable.classList.add('disabled');
+            buttonOperatorToDisable.disabled = true;
         });
+
+        buttonEqual.disabled = true;;
     }
-    isError = true;
 }
 
 function enableButton(buttonToEnable) {
@@ -273,7 +291,6 @@ function handleOperatorButton(event) {
         deleteLastSymbol();
     }
 
-    addToDisplay(operatorValue, gap=true)
     checkDecimalPoint();
 
     if (!isSecondNumber) {
@@ -281,6 +298,8 @@ function handleOperatorButton(event) {
     } else {
         getResult(isAfterEqualClick=false);
     }
+
+    addToDisplay(operatorValue, gap=true)
 
     operator = operatorValue;  
 }
