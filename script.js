@@ -132,7 +132,7 @@ function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when w
     }
 
     if (!Number.isInteger(result)) {
-        disableButton(buttonDecimalPoint);
+        disableButton(isDisableOperators=false, buttonDecimalPoint);
         isDecimalPointDisabled = true;
     }    
 }
@@ -157,7 +157,7 @@ function handleDecimalPointButton() {
     }
 
     addToDisplay(symbolPoint);
-    disableButton(buttonDecimalPoint);
+    disableButton(isDisableOperators=false, buttonDecimalPoint);
     isDecimalPointDisabled = true;
 }
 
@@ -200,11 +200,7 @@ function hideErrorMessage(errorToHide) {
     errorToHide.classList.add('hidden');
 
     if (errorToHide === errorZero) {
-        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToEnable => {
-            enableButton(buttonOperatorToEnable);
-        });
-
-        enableButton(buttonEqual);
+        enableButton(isEnableOperators=true, buttonEqual);
         isZeroError = false;
     } else {
         isEqualError = false;
@@ -249,9 +245,15 @@ function handleDigitButton(clickedDigit) {
             number2 = digitValue;
             deleteLastSymbol();
             hideErrorMessage(errorZero);
+            enableButton(isEnableOperators=true, buttonEqual);
         } else {
+            if (number2 === '0.') {
+                enableButton(isEnableOperators=true, buttonEqual);
+            }
+
             number2 += digitValue;
         }  
+
         addToDisplay(digitValue);
     }
 } 
@@ -260,25 +262,36 @@ function showErrorMessage(errorToShow) {
     errorToShow.classList.remove('hidden');
 
     if (errorToShow === errorZero) {
-        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToDisable => {
-            disableButton(buttonOperatorToDisable);
+        disableButton(isDisableOperators=true, buttonEqual);
+}
+}
+
+function enableButton(isEnableOperators,...buttonsToEnable) {
+    if (isEnableOperators) {
+        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToEnable => {
+            buttonOperatorToEnable.disabled = false;
         });
-
-        disableButton(buttonEqual);
     }
+
+    buttonsToEnable.forEach(buttonToEnable => {
+        buttonToEnable.disabled = false;
+    });
 }
 
-function enableButton(buttonToEnable) {
-    buttonToEnable.disabled = false;
-}
-
-function disableButton(buttonToDisable) {
-    buttonToDisable.disabled = true;
+function disableButton(isDisableOperators, ...buttonsToDisable) {
+    if (isDisableOperators) {
+        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToDisable => {
+            buttonOperatorToDisable.disabled = true;
+        });
+    }
+    buttonsToDisable.forEach(buttonToDisable => {
+        buttonToDisable.disabled = true;
+    });
 }
 
 function checkDecimalPoint() {
     if (isDecimalPointDisabled) {
-        enableButton(buttonDecimalPoint);
+        enableButton(isEnableOperators=false, buttonDecimalPoint);
         isDecimalPointDisabled = false;
     }
 }
