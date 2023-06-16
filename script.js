@@ -137,7 +137,6 @@ function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when w
     }    
 }
 
-
 function handleEqualSign(){
     if (!isSecondNumber) {
         showErrorMessage(errorEqual);
@@ -201,12 +200,11 @@ function hideErrorMessage(errorToHide) {
     errorToHide.classList.add('hidden');
 
     if (errorToHide === errorZero) {
-        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToDisable => {
-            buttonOperatorToDisable.disabled = false;
+        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToEnable => {
+            enableButton(buttonOperatorToEnable);
         });
 
-        buttonEqual.disabled = false;
-
+        enableButton(buttonEqual);
         isZeroError = false;
     } else {
         isEqualError = false;
@@ -263,19 +261,19 @@ function showErrorMessage(errorToShow) {
 
     if (errorToShow === errorZero) {
         Array.from(containerOperatorButtons.children).forEach(buttonOperatorToDisable => {
-            buttonOperatorToDisable.disabled = true;
+            disableButton(buttonOperatorToDisable);
         });
 
-        buttonEqual.disabled = true;;
+        disableButton(buttonEqual);
     }
 }
 
 function enableButton(buttonToEnable) {
-    buttonToEnable.classList.remove('disabled');
+    buttonToEnable.disabled = false;
 }
 
 function disableButton(buttonToDisable) {
-    buttonToDisable.classList.add('disabled');
+    buttonToDisable.disabled = true;
 }
 
 function checkDecimalPoint() {
