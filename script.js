@@ -169,6 +169,10 @@ function deleteLastSymbol() {
 
     if (isFirstNumber) {
         number1 = finalDisplay;
+
+        if (lastSymbol === '.') {
+            enableButton(buttonDecimalPoint);
+        }
     } else if (isZeroError) {
         containerDisplay.textContent = containerDisplay.textContent.slice(0, currentDisplayLength - 1);
         return;
