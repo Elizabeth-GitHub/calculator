@@ -161,47 +161,59 @@ function handleDecimalPointButton() {
     isDecimalPointDisabled = true;
 }
 
-function deleteLastSymbol() { //////////
+function deleteSymbol(typeOfDeletion, displayCurrent) {
+
+    if (typeOfDeletion === 'operator') {
+        containerDisplay.textContent = displayCurrent.slice(0, -3);
+    } else {
+        const currentDisplayWithoutLastSymbol = displayCurrent.slice(0, -1);
+
+        if (typeOfDeletion === 'secondNumber') {
+            containerDisplay.textContent = currentDisplayWithoutLastSymbol;
+            number2 = number2.slice(0, -1);
+        } else if (typeOfDeletion === 'firstNumber') {
+            containerDisplay.textContent = (currentDisplayWithoutLastSymbol.length > 0) ?currentDisplayWithoutLastSymbol : 0;
+            number1 =  (currentDisplayWithoutLastSymbol.length > 0) ?currentDisplayWithoutLastSymbol : 0;
+        }
+    } 
+} 
+
+
+function deleteLastSymbol() {
+    const currentDisplay = containerDisplay.textContent;
     const currentDisplayLength = containerDisplay.textContent.length;
-    const lastSymbol = containerDisplay.textContent[currentDisplayLength- 1];
-    const displayWithoutLastSymbol = containerDisplay.textContent.slice(0, -1);
-    const finalDisplay = (currentDisplayLength > 1) ? displayWithoutLastSymbol : 0;
-    if (lastSymbol === '.') {
+    const currentSymbol = currentDisplay[currentDisplayLength - 1];
+    const previousSymbol = currentDisplay[currentDisplayLength - 2]
+
+    if (currentSymbol === '.') {
         enableButton(buttonDecimalPoint);
+        isDecimalPointDisabled = false;
     }
 
     if (isSecondNumber) {
-        if (lastSymbol === ' ') {
+        deleteSymbol('secondNumber', currentDisplay);
+
+        if (previousSymbol === ' ') {
             isSecondNumber = false;
             isOperator = true;
-            containerDisplay.textContent.slice(0, currentDisplayLength - 2)
-            return
         }
+    } else if(isOperator) { 
+        if (currentSymbol === ' ') { 
+            deleteSymbol('operator', currentDisplay);
+            operator = '';
+
+            if (checkIfDigit(number1) && !isDecimalPointDisabled) {
+                disableButton(buttonDecimalPoint)
+                isDecimalPointDisabled = true;
+            } 
+        } else { 
+            isOperator = false;
+            isFirstNumber = true;         
+            deleteSymbol('firstNumber', currentDisplay);
+        }
+    } else if (isFirstNumber) {
+        deleteSymbol('firstNumber', currentDisplay);
     }
-
-    /*if (isFirstNumber) {
-        number1 = finalDisplay; 
-    } else if (isZeroError) { 
-        containerDisplay.textContent = containerDisplay.textContent.slice(0, currentDisplayLength - 1);
-        return;
-    } else if (!checkIfDigit(lastSymbol)) {
-        operator = '';
-        isFirstNumber = true;
-        containerDisplay.textContent = containerDisplay.textContent.slice(0, currentDisplayLength - 2);
-        return;
-    } else {
-        const regex = /\d+$/;
-        const symbolsBeforeOperator = displayWithoutLastSymbol.match(regex);
-
-        if (symbolsBeforeOperator) {
-            number2 = symbolsBeforeOperator[0]; // Digital value of match
-        } else {
-            isSecondNumber = false;
-            number2 = '';
-        }
-    }*/
-
-    containerDisplay.textContent = finalDisplay;
 }
 
 function checkIfDigit(symbolToCheck) {
