@@ -161,19 +161,27 @@ function handleDecimalPointButton() {
     isDecimalPointDisabled = true;
 }
 
-function deleteLastSymbol() {
+function deleteLastSymbol() { //////////
     const currentDisplayLength = containerDisplay.textContent.length;
     const lastSymbol = containerDisplay.textContent[currentDisplayLength- 1];
     const displayWithoutLastSymbol = containerDisplay.textContent.slice(0, -1);
     const finalDisplay = (currentDisplayLength > 1) ? displayWithoutLastSymbol : 0;
+    if (lastSymbol === '.') {
+        enableButton(buttonDecimalPoint);
+    }
 
-    if (isFirstNumber) {
-        number1 = finalDisplay;
-
-        if (lastSymbol === '.') {
-            enableButton(buttonDecimalPoint);
+    if (isSecondNumber) {
+        if (lastSymbol === ' ') {
+            isSecondNumber = false;
+            isOperator = true;
+            containerDisplay.textContent.slice(0, currentDisplayLength - 2)
+            return
         }
-    } else if (isZeroError) {
+    }
+
+    /*if (isFirstNumber) {
+        number1 = finalDisplay; 
+    } else if (isZeroError) { 
         containerDisplay.textContent = containerDisplay.textContent.slice(0, currentDisplayLength - 1);
         return;
     } else if (!checkIfDigit(lastSymbol)) {
@@ -191,7 +199,7 @@ function deleteLastSymbol() {
             isSecondNumber = false;
             number2 = '';
         }
-    }
+    }*/
 
     containerDisplay.textContent = finalDisplay;
 }
@@ -238,6 +246,7 @@ function handleDigitButton(clickedDigit) {
         isSecondNumber = true;
         addToDisplay(digitValue);
         number2 = digitValue;
+        enableButton(buttonDecimalPoint);
 
         if (digitValue === '0' && operator === '/') {
             showErrorMessage(errorZero);
@@ -300,11 +309,11 @@ function checkDecimalPoint() {
 function handleOperatorButton(event) {
     const operatorValue = event.target.textContent;
 
+    disableButton(buttonDecimalPoint);
+
     if (isOperator) { // Display and use the last operator if the user has clicked more than one in a row
         deleteLastSymbol();
     }
-
-    checkDecimalPoint();
 
     if (!isSecondNumber) {
         shiftFromFirstToOperator();   

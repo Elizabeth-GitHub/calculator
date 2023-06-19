@@ -17,10 +17,12 @@
 .upper-button {
     width: 10vw;
     height: 3vw;
+    background-color:#d3aaaa;
 }
 
 .button-operator{
     margin-left: 0;
+    background-color:#d3aaaa;
 }
 
 .hidden {
