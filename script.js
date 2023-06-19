@@ -133,7 +133,6 @@ function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when w
 
     if (!Number.isInteger(result)) {
         disableButton(buttonDecimalPoint);
-        isDecimalPointDisabled = true;
     }    
 }
 
@@ -158,7 +157,7 @@ function handleDecimalPointButton() {
 
     addToDisplay(symbolPoint);
     disableButton(buttonDecimalPoint);
-    isDecimalPointDisabled = true;
+    /*isDecimalPointDisabled = true;*/
 }
 
 function deleteSymbol(typeOfDeletion, displayCurrent) {
@@ -187,7 +186,6 @@ function deleteLastSymbol() {
 
     if (currentSymbol === '.') {
         enableButton(buttonDecimalPoint);
-        isDecimalPointDisabled = false;
     }
 
     if (isSecondNumber) {
@@ -204,7 +202,6 @@ function deleteLastSymbol() {
 
             if (checkIfDigit(number1) && !isDecimalPointDisabled) {
                 disableButton(buttonDecimalPoint)
-                isDecimalPointDisabled = true;
             } 
         } else { 
             isOperator = false;
@@ -299,6 +296,10 @@ function enableButton(buttonToEnable, isEnableOperators=false) {
     }
 
     buttonToEnable.disabled = false;
+
+    if (buttonToEnable === buttonDecimalPoint) {
+        isDecimalPointDisabled = false;
+    }
 }
 
 function disableButton(buttonToDisable, isDisableOperators=false) {
@@ -309,12 +310,15 @@ function disableButton(buttonToDisable, isDisableOperators=false) {
     }
 
     buttonToDisable.disabled = true;
+
+    if (buttonToDisable === buttonDecimalPoint) {
+        isDecimalPointDisabled = true;
+    }
 }
 
 function checkDecimalPoint() {
     if (isDecimalPointDisabled) {
         enableButton(buttonDecimalPoint);
-        isDecimalPointDisabled = false;
     }
 }
 
