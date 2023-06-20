@@ -115,6 +115,10 @@ buttonClear.addEventListener('click', () => {
     if (isDecimalPointDisabled) {
         enableButton(buttonDecimalPoint);
     }
+
+    if (isZeroError) {
+        hideErrorMessage(errorZero);
+    }
 });
 buttonDelete.addEventListener('click', deleteLastSymbol);
 //
@@ -278,7 +282,8 @@ function handleDigitButton(clickedDigit) {
             enableButton(buttonEqual, isEnableOperators=true);
         } else {
             if (number2 === '0.') {
-                enableButton(buttonEqual, isEnableOperators=true, );
+                enableButton(buttonEqual, isEnableOperators=true);
+                hideErrorMessage(errorZero);
             }
 
             number2 += digitValue;
