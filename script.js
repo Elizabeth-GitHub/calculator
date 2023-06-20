@@ -11,6 +11,7 @@ const containerLowerButtons = document.createElement('div');
 const containerDigitButtons = document.createElement('div');
 const containerOperatorButtons = document.createElement('div');
 const containerDisplay = document.getElementById('display');
+const containerFooter = document.createElement('div');
 const buttonDecimalPoint = document.createElement('button');
 const buttonEqual = document.createElement('button');
 const buttonClear = document.createElement('button');
@@ -18,6 +19,15 @@ const buttonDelete = document.createElement('button');
 const containerErrorMessage = document.createElement('div');
 const errorEqual = document.createElement('p');
 const errorZero = document.createElement('p');
+/*const containerCreator = document.createElement('div');*/
+const creator = document.createElement('p');
+const linkCreator = document.createElement('a');
+const containerIconCredit = document.createElement('div');
+const linkIcon = document.createElement('a');
+const linkAuthor = document.createElement('a');
+const linkFlaticon = document.createElement('a');
+const iconCreditTextNode = document.createTextNode(' and used under the Flaticon Free License');
+
 const containers = [
     containerMain,
     containerHeader,
@@ -29,7 +39,10 @@ const containers = [
     containerLowerButtons,
     containerDigitButtons,
     containerOperatorButtons,
-    containerErrorMessage
+    containerErrorMessage,
+    containerFooter,
+    /*containerCreator, */
+    containerIconCredit
   ];
   
 
@@ -61,6 +74,9 @@ containerLowerButtons.setAttribute('id', 'container-lowerbuttons');
 containerDigitButtons.setAttribute('id', 'container-digitbuttons');
 containerOperatorButtons.setAttribute('id', 'container-operatorbuttons');
 containerErrorMessage.setAttribute('id', 'container-errormessage');
+containerFooter.setAttribute('id', 'container-footer');
+creator.setAttribute('id', 'creator');
+containerIconCredit.setAttribute('id', 'container-iconcredit');
 buttonDecimalPoint.setAttribute('id', 'button-decimalpoint');
 buttonDecimalPoint.classList.add('button');
 buttonDecimalPoint.textContent = '.';
@@ -77,7 +93,23 @@ errorEqual.textContent = 'Incorrect action. Perform a calculation first.'
 errorZero.innerHTML = 'It seems you\'re trying to divide by zero.<br>' +
                       'Division by zero is not allowed in this calculator!<br>' +
                       'Please choose a non-zero value as the divisor to proceed with the division operation.';
-
+containerFooter.setAttribute('id', 'container-footer');
+/*containerCreator.setAttribute('id', 'container-creator');*/
+creator.innerText = 'Created by ';
+linkCreator.classList.add('text-footer');
+linkCreator.href = 'https://github.com/Elizabeth-GitHub';
+linkCreator.target = '_blank';
+linkCreator.innerText = 'Elizabeth Developer';
+containerIconCredit.style.whiteSpace = 'nowrap';
+linkIcon.href = 'https://www.flaticon.com/free-icon/calculator_9461186?term=calculator&page=1&position=32&origin=search&related_id=9461186';
+linkIcon.target = '_blank';
+linkIcon.textContent = 'Calculator icon';
+linkAuthor.href = 'https://www.flaticon.com/authors/vectorslab';
+linkAuthor.target = '_blank';
+linkAuthor.textContent = 'Vectorslab';
+linkFlaticon.href = 'https://www.flaticon.com/';
+linkFlaticon.target = '_blank';
+linkFlaticon.textContent = 'Flaticon';                   
 
 document.body.appendChild(containerMain);
 containerMain.appendChild(containerHeader);
@@ -95,6 +127,18 @@ containerLowerButtons.appendChild(containerOperatorButtons);
 containerCalculator.appendChild(containerErrorMessage);
 containerErrorMessage.appendChild(errorEqual);
 containerErrorMessage.appendChild(errorZero);
+containerMain.appendChild(containerFooter);
+/*containerFooter.appendChild(containerCreator);*/
+containerFooter.appendChild(creator);
+creator.appendChild(linkCreator);
+containerFooter.appendChild(containerIconCredit);
+containerIconCredit.appendChild(linkIcon);
+containerIconCredit.appendChild(document.createTextNode(' was made by '));
+containerIconCredit.appendChild(linkAuthor);
+containerIconCredit.appendChild(document.createTextNode(' from '));
+containerIconCredit.appendChild(linkFlaticon);
+containerIconCredit.appendChild(iconCreditTextNode);
+
 //
 containerButtons.addEventListener('click', (event) => {
     if (isEqualError && event.target.textContent !== '=') {

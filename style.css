@@ -1,9 +1,17 @@
-h1{
+h1 {
     font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', Times, serif;
     color:  #8f3b3b;
     font-size: 6vw;
     margin: 0;
 }
+
+a {
+    text-decoration: none;
+  }
+  
+  a, a:visited {
+    color: inherit;
+  }
 
 .container {
     display: flex;
@@ -104,4 +112,19 @@ h1{
     font-weight: 800;
     text-align: center;
     margin-top: auto;
+}
+
+#container-footer {
+    margin-top: auto;
+    margin-bottom: 0.5vw;
+}
+
+#creator {
+    margin-bottom: 0;
+}
+
+#container-iconcredit{
+    white-space: nowrap; 
+    display: inline-block; /* Displays the elements in one line */
+    white-space: normal;
 }
