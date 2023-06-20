@@ -146,7 +146,9 @@ function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when w
 
     if (!Number.isInteger(result)) {
         disableButton(buttonDecimalPoint);
-    }    
+    } else if (isDecimalPointDisabled) {
+        enableButton(buttonDecimalPoint);
+    } 
 }
 
 function handleEqualSign(){
@@ -164,6 +166,10 @@ function handleDecimalPointButton() {
 
     if (isFirstNumber) {
         number1 += symbolPoint;
+
+        if (isResult) {
+            isResult = false;
+        }
     } else {
         number2 += symbolPoint;
     }
