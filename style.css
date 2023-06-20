@@ -1,3 +1,10 @@
+h1{
+    font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', Times, serif;
+    color:  #8f3b3b;
+    font-size: 6vw;
+    margin: 0;
+}
+
 .container {
     display: flex;
     flex-direction: column;
@@ -32,7 +39,12 @@
 
 #container-main {
     height: 100vh;
-    background-color: #ffffff;
+    background-color: #faf0f0;
+    justify-content: flex-start;
+}
+
+#container-header {
+    margin-bottom: 2vw;
 }
 
 #container-calculator {
@@ -87,6 +99,7 @@
 }
 
 #container-errormessage {
+    max-height: 4vw;
     font-size: larger;
     font-weight: 800;
     text-align: center;

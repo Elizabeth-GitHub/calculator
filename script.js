@@ -1,6 +1,8 @@
 const OPERATORS = ['+', '-', '*', '/'];
 
 const containerMain = document.createElement('div');
+const containerHeader = document.createElement('div');
+const textHeader = document.createElement('h1');
 const containerCalculator = document.createElement('div');
 const containerContent = document.createElement('div');
 const containerButtons = document.getElementById('buttons-container');
@@ -18,8 +20,10 @@ const errorEqual = document.createElement('p');
 const errorZero = document.createElement('p');
 const containers = [
     containerMain,
+    containerHeader,
     containerCalculator,
     containerContent,
+    containerDisplay,
     containerButtons,
     containerUpperButtons,
     containerLowerButtons,
@@ -47,7 +51,8 @@ containers.forEach(container => {
     container.classList.add('container');
 });
 containerMain.setAttribute('id', 'container-main');
-containerDisplay.classList.add('container');
+containerHeader.setAttribute('id', 'container-header');
+textHeader.textContent = 'CALCULATOR';
 containerCalculator.setAttribute('id', 'container-calculator');
 containerContent.setAttribute('id', 'container-content');
 containerDisplay.setAttribute('id', 'container-display');
@@ -75,6 +80,8 @@ errorZero.innerHTML = 'It seems you\'re trying to divide by zero.<br>' +
 
 
 document.body.appendChild(containerMain);
+containerMain.appendChild(containerHeader);
+containerHeader.appendChild(textHeader);
 containerMain.appendChild(containerCalculator);
 containerCalculator.appendChild(containerContent);
 containerContent.appendChild(containerDisplay);
