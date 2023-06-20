@@ -45,6 +45,7 @@
 
 #container-content {
     width: 20vw;
+    margin-top: auto;
 }
 
 #container-display, #container-upperbuttons, #container-lowerbuttons {
@@ -89,4 +90,5 @@
     font-size: larger;
     font-weight: 800;
     text-align: center;
+    margin-top: auto;
 }

@@ -206,6 +206,10 @@ function deleteLastSymbol() {
         enableButton(buttonDecimalPoint);
     }
 
+    if (isResult) {
+        isResult = false;
+    }
+
     if (isSecondNumber) {
         deleteSymbol('secondNumber', currentDisplay);
 
