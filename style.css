@@ -12,6 +12,7 @@
     height: 4.8vw;
     margin: 0.1vw;
     background-color: #f9f4f4 ;
+    font-size: large;
 }
 
 .upper-button {
@@ -35,23 +36,33 @@
 }
 
 #container-calculator {
-    border: 1px solid green;
+    border: 1px solid #c29696;
     border-radius: 5%;
     background-color: #e7d3d3;
     width: 25vw;
-    height: 30vw;
+    height: 35vw;
 }
+
+#container-content {
+    width: 20vw;
+}
+
+#container-display, #container-upperbuttons, #container-lowerbuttons {
+    width: 100%;
+}
+
 #container-display {
+    height: 2vw;
     margin-bottom: 1rem;
     border: 1px solid black;
-    width: 15vw;
     align-items: flex-end;
-    
+    font-size: xx-large;
+    border: 2px solid #c29696;
+    border-radius: 5%;
 }
 
 #container-upperbuttons {
     flex-direction: row;
-    width: 20vw;
     margin-bottom: 0.25rem;
     justify-content: space-around;
 }
@@ -71,7 +82,11 @@
 }
 
 #button-equal {
-    background-color: #dec3c3;
+    background-color: #c29696;
 }
 
-
+#container-errormessage {
+    font-size: larger;
+    font-weight: 800;
+    text-align: center;
+}

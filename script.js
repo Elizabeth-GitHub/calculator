@@ -2,6 +2,7 @@ const OPERATORS = ['+', '-', '*', '/'];
 
 const containerMain = document.createElement('div');
 const containerCalculator = document.createElement('div');
+const containerContent = document.createElement('div');
 const containerButtons = document.getElementById('buttons-container');
 const containerUpperButtons = document.createElement('div');
 const containerLowerButtons = document.createElement('div'); 
@@ -18,6 +19,7 @@ const errorZero = document.createElement('p');
 const containers = [
     containerMain,
     containerCalculator,
+    containerContent,
     containerButtons,
     containerUpperButtons,
     containerLowerButtons,
@@ -47,11 +49,13 @@ containers.forEach(container => {
 containerMain.setAttribute('id', 'container-main');
 containerDisplay.classList.add('container');
 containerCalculator.setAttribute('id', 'container-calculator');
+containerContent.setAttribute('id', 'container-content');
 containerDisplay.setAttribute('id', 'container-display');
 containerUpperButtons.setAttribute('id', 'container-upperbuttons');
 containerLowerButtons.setAttribute('id', 'container-lowerbuttons');
 containerDigitButtons.setAttribute('id', 'container-digitbuttons');
 containerOperatorButtons.setAttribute('id', 'container-operatorbuttons');
+containerErrorMessage.setAttribute('id', 'container-errormessage');
 buttonDecimalPoint.setAttribute('id', 'button-decimalpoint');
 buttonDecimalPoint.classList.add('button');
 buttonDecimalPoint.textContent = '.';
@@ -65,14 +69,16 @@ buttonDelete.textContent = 'DELETE';
 errorEqual.classList.add('hidden');
 errorZero.classList.add('hidden');
 errorEqual.textContent = 'Incorrect action. Perform a calculation first.'
-errorZero.textContent = 'It seems you\'re trying to divide by zero. Division by zero is not allowed in this calculator.\
-                        Please choose a non-zero value as the divisor to proceed with the division operation.'
+errorZero.innerHTML = 'It seems you\'re trying to divide by zero.<br>' +
+                      'Division by zero is not allowed in this calculator!<br>' +
+                      'Please choose a non-zero value as the divisor to proceed with the division operation.';
 
 
 document.body.appendChild(containerMain);
 containerMain.appendChild(containerCalculator);
-containerCalculator.appendChild(containerDisplay);
-containerCalculator.appendChild(containerButtons);
+containerCalculator.appendChild(containerContent);
+containerContent.appendChild(containerDisplay);
+containerContent.appendChild(containerButtons);
 containerButtons.appendChild(containerUpperButtons);
 containerUpperButtons.appendChild(buttonClear);
 containerUpperButtons.appendChild(buttonDelete);
@@ -105,7 +111,10 @@ buttonClear.addEventListener('click', () => {
     isSecondNumber = false;
     [number1, number2, operator] = ['0', '', ''];
     containerDisplay.textContent = number1;
-    checkDecimalPoint();
+
+    if (isDecimalPointDisabled) {
+        enableButton(buttonDecimalPoint);
+    }
 });
 buttonDelete.addEventListener('click', deleteLastSymbol);
 //
@@ -157,7 +166,6 @@ function handleDecimalPointButton() {
 
     addToDisplay(symbolPoint);
     disableButton(buttonDecimalPoint);
-    /*isDecimalPointDisabled = true;*/
 }
 
 function deleteSymbol(typeOfDeletion, displayCurrent) {
@@ -315,13 +323,6 @@ function disableButton(buttonToDisable, isDisableOperators=false) {
         isDecimalPointDisabled = true;
     }
 }
-
-function checkDecimalPoint() {
-    if (isDecimalPointDisabled) {
-        enableButton(buttonDecimalPoint);
-    }
-}
-
 function handleOperatorButton(event) {
     const operatorValue = event.target.textContent;
 
