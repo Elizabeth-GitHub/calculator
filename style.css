@@ -117,6 +117,7 @@ a {
 #container-footer {
     margin-top: auto;
     margin-bottom: 0.5vw;
+    font-size: smaller;
 }
 
 #creator {

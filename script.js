@@ -19,7 +19,6 @@ const buttonDelete = document.createElement('button');
 const containerErrorMessage = document.createElement('div');
 const errorEqual = document.createElement('p');
 const errorZero = document.createElement('p');
-/*const containerCreator = document.createElement('div');*/
 const creator = document.createElement('p');
 const linkCreator = document.createElement('a');
 const containerIconCredit = document.createElement('div');
@@ -41,7 +40,6 @@ const containers = [
     containerOperatorButtons,
     containerErrorMessage,
     containerFooter,
-    /*containerCreator, */
     containerIconCredit
   ];
   
@@ -94,7 +92,6 @@ errorZero.innerHTML = 'It seems you\'re trying to divide by zero.<br>' +
                       'Division by zero is not allowed in this calculator!<br>' +
                       'Please choose a non-zero value as the divisor to proceed with the division operation.';
 containerFooter.setAttribute('id', 'container-footer');
-/*containerCreator.setAttribute('id', 'container-creator');*/
 creator.innerText = 'Created by ';
 linkCreator.classList.add('text-footer');
 linkCreator.href = 'https://github.com/Elizabeth-GitHub';
@@ -128,7 +125,6 @@ containerCalculator.appendChild(containerErrorMessage);
 containerErrorMessage.appendChild(errorEqual);
 containerErrorMessage.appendChild(errorZero);
 containerMain.appendChild(containerFooter);
-/*containerFooter.appendChild(containerCreator);*/
 containerFooter.appendChild(creator);
 creator.appendChild(linkCreator);
 containerFooter.appendChild(containerIconCredit);
@@ -140,6 +136,7 @@ containerIconCredit.appendChild(linkFlaticon);
 containerIconCredit.appendChild(iconCreditTextNode);
 
 //
+document.addEventListener('keydown', handleKeyDown);
 containerButtons.addEventListener('click', (event) => {
     if (isEqualError && event.target.textContent !== '=') {
         hideErrorMessage(errorEqual);
@@ -149,14 +146,16 @@ containerDigitButtons.addEventListener('click', function(event) {
     const clickedButton = event.target;
 
     if (clickedButton.classList.contains('button-digits')) {
-      handleDigitButton(clickedButton);
+      handleDigitButton(clickedButton.textContent);
     } else if (clickedButton === buttonDecimalPoint) {
         handleDecimalPointButton();
     } else {
         handleEqualSign();
     }
 });
-containerOperatorButtons.addEventListener('click', handleOperatorButton);
+containerOperatorButtons.addEventListener('click', (event) => {
+    handleOperatorButton(event.target.textContent);
+  });
 
 buttonClear.addEventListener('click', () => {
     isSecondNumber = false;
@@ -173,6 +172,25 @@ buttonClear.addEventListener('click', () => {
 });
 buttonDelete.addEventListener('click', deleteLastSymbol);
 //
+function handleKeyDown(event) {
+    const key = event.key;
+    console.log(key);
+  
+    if (checkIfDigit(key)) {
+      handleDigitButton(key);
+    } else if (OPERATORS.includes(key)) {
+        handleOperatorButton(key);
+    } else if (key === '.') {
+        handleDecimalPointButton();
+    } else if (key === 'Backspace') {
+        deleteLastSymbol();
+    } else if (key === '=' || key === 'Enter') {
+        handleEqualSign();
+    } else {
+        event.preventDefault();
+    }
+  }
+
 function shiftFromFirstToOperator() {
     isFirstNumber = false;
     isOperator = true;
@@ -240,8 +258,8 @@ function deleteSymbol(typeOfDeletion, displayCurrent) {
             containerDisplay.textContent = currentDisplayWithoutLastSymbol;
             number2 = number2.slice(0, -1);
         } else if (typeOfDeletion === 'firstNumber') {
-            containerDisplay.textContent = (currentDisplayWithoutLastSymbol.length > 0) ?currentDisplayWithoutLastSymbol : 0;
-            number1 =  (currentDisplayWithoutLastSymbol.length > 0) ?currentDisplayWithoutLastSymbol : 0;
+            containerDisplay.textContent = (currentDisplayWithoutLastSymbol.length > 0) ?currentDisplayWithoutLastSymbol : '0';
+            number1 =  (currentDisplayWithoutLastSymbol.length > 0) ?currentDisplayWithoutLastSymbol : '0';
         }
     } 
 } 
@@ -306,8 +324,7 @@ function addToDisplay(valueToDisplay, gap=false) {
     containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
 }
 
-function handleDigitButton(clickedDigit) {
-    const digitValue = clickedDigit.textContent;
+function handleDigitButton(digitValue) {
 
     if (isFirstNumber) {  // Working with the first number
         if (number1 === '0') {
@@ -389,9 +406,7 @@ function disableButton(buttonToDisable, isDisableOperators=false) {
         isDecimalPointDisabled = true;
     }
 }
-function handleOperatorButton(event) {
-    const operatorValue = event.target.textContent;
-
+function handleOperatorButton(operatorValue) {
     disableButton(buttonDecimalPoint);
 
     if (isOperator) { // Display and use the last operator if the user has clicked more than one in a row
