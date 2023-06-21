@@ -157,7 +157,10 @@ containerOperatorButtons.addEventListener('click', (event) => {
     handleOperatorButton(event.target.textContent);
   });
 
-buttonClear.addEventListener('click', () => {
+buttonClear.addEventListener('click', clearAll);
+buttonDelete.addEventListener('click', deleteLastSymbol);
+//
+function clearAll() {
     isSecondNumber = false;
     [number1, number2, operator] = ['0', '', ''];
     containerDisplay.textContent = number1;
@@ -169,9 +172,7 @@ buttonClear.addEventListener('click', () => {
     if (isZeroError) {
         hideErrorMessage(errorZero);
     }
-});
-buttonDelete.addEventListener('click', deleteLastSymbol);
-//
+}
 function handleKeyDown(event) {
     const key = event.key;
     console.log(key);
@@ -184,6 +185,8 @@ function handleKeyDown(event) {
         handleDecimalPointButton();
     } else if (key === 'Backspace') {
         deleteLastSymbol();
+    } else if (key === 'Escape') {
+        clearAll();
     } else if (key === '=' || key === 'Enter') {
         handleEqualSign();
     } else {
