@@ -1,4 +1,11 @@
 const OPERATORS = ['+', '-', '*', '/'];
+const KEY_SYMBOLS = {
+    DOT: '.',
+    BACKSPACE: 'Backspace',
+    ESCAPE: 'Escape',
+    EQUALS: '=',
+    ENTER: 'Enter'
+  };
 
 const containerMain = document.createElement('div');
 const containerHeader = document.createElement('div');
@@ -137,9 +144,24 @@ containerIconCredit.appendChild(linkFlaticon);
 containerIconCredit.appendChild(iconCreditTextNode);
 
 //
-function addEventListeners() {
-    document.addEventListener('keydown', handleKeyDown);
-    containerButtons.addEventListener('click', handleButtonClick);
+function handleKeyDown(event) {
+    const key = event.key;
+  
+    if (checkIfDigit(key)) {
+      handleDigitButton(key);
+    } else if (OPERATORS.includes(key)) {
+      handleOperatorButton(key);
+    } else if (key === KEY_SYMBOLS.DOT) {
+      handleDecimalPointButton();
+    } else if (key === KEY_SYMBOLS.BACKSPACE) {
+      deleteLastSymbol();
+    } else if (key === KEY_SYMBOLS.ESCAPE) {
+      clearAll();
+    } else if (key === KEY_SYMBOLS.EQUALS || key === KEY_SYMBOLS.ENTER) {
+      handleEqualSign();
+    } else {
+      event.preventDefault();
+    }
 }
 
 function handleButtonClick(event) {
@@ -173,6 +195,11 @@ function handleButtonClick(event) {
             }
             break;
     }
+}
+
+function addEventListeners() {
+    document.addEventListener('keydown', handleKeyDown);
+    containerButtons.addEventListener('click', handleButtonClick);
 }
 //
 function clearAll() {
