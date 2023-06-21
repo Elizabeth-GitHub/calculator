@@ -369,17 +369,20 @@ function addToDisplay(valueToDisplay, gap=false) {
     containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
 }
 
+function replaceFirstNumber() {
+    containerDisplay.textContent = number1;
+}
+
 function handleDigitButton(digitValue) {
 
     if (isFirstNumber) {  // Working with the first number
         if (number1 === '0') {
             if (digitValue !== '0') {
                 number1 = digitValue;
-                containerDisplay.textContent = number1;
+                replaceFirstNumber();
             }
         } else if (isResult) {
             number1 = digitValue;
-            containerDisplay.textContent = number1;
             isResult = false;
         } else {
             number1 += digitValue;
