@@ -57,6 +57,7 @@ let operator = '';
 
 createButtonsOperators();
 createButtonsDigits();
+addEventListeners();
 
 containers.forEach(container => {
     container.classList.add('container');
@@ -136,29 +137,43 @@ containerIconCredit.appendChild(linkFlaticon);
 containerIconCredit.appendChild(iconCreditTextNode);
 
 //
-document.addEventListener('keydown', handleKeyDown);
-containerButtons.addEventListener('click', (event) => {
-    if (isEqualError && event.target.textContent !== '=') {
-        hideErrorMessage(errorEqual);
-    }
-})
-containerDigitButtons.addEventListener('click', function(event) {
-    const clickedButton = event.target;
+function addEventListeners() {
+    document.addEventListener('keydown', handleKeyDown);
+    containerButtons.addEventListener('click', handleButtonClick);
+}
 
-    if (clickedButton.classList.contains('button-digits')) {
-      handleDigitButton(clickedButton.textContent);
-    } else if (clickedButton === buttonDecimalPoint) {
-        handleDecimalPointButton();
-    } else {
-        handleEqualSign();
-    }
-});
-containerOperatorButtons.addEventListener('click', (event) => {
-    handleOperatorButton(event.target.textContent);
-  });
+function handleButtonClick(event) {
+    const buttonClicked = event.target;
 
-buttonClear.addEventListener('click', clearAll);
-buttonDelete.addEventListener('click', deleteLastSymbol);
+    if (isEqualError && buttonClicked !== buttonEqual) {
+      hideErrorMessage(errorEqual);
+    }
+
+    switch (buttonClicked) {
+        case buttonDecimalPoint:
+            handleDecimalPointButton();
+            break;
+        case buttonClear:
+            clearAll();
+            break;
+        case buttonDelete:
+            deleteLastSymbol();
+            break;
+        case buttonEqual:
+            handleEqualSign();
+            break;
+        default:
+            const classButton = buttonClicked.classList;
+            const valueOfClickedButton = buttonClicked.textContent;
+
+            if (classButton.contains('button-digit')) {
+            handleDigitButton(valueOfClickedButton);
+            } else if (classButton.contains('button-operator')) {
+            handleOperatorButton(valueOfClickedButton);
+            }
+            break;
+    }
+}
 //
 function clearAll() {
     isSecondNumber = false;
@@ -443,7 +458,7 @@ function createButtonsDigits() {
 
     const buttonZero = document.createElement('button');
 
-    buttonZero.classList.add('button', 'button-digits');
+    buttonZero.classList.add('button', 'button-digit');
     buttonZero.textContent = '0';
     containerDigitButtons.appendChild(buttonZero);
 
@@ -452,7 +467,7 @@ function createButtonsDigits() {
    for (let i = 1; i < 10; i++) {
     const buttonDigit = document.createElement('button');
 
-    buttonDigit.classList.add('button', 'button-digits');
+    buttonDigit.classList.add('button', 'button-digit');
     buttonDigit.textContent = i;
     containerDigitButtons.appendChild(buttonDigit);
     }  
