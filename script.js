@@ -5,8 +5,10 @@ const KEY_SYMBOLS = {
     ESCAPE: 'Escape',
     EQUALS: '=',
     ENTER: 'Enter'
-  };
-
+};
+const ZERO = '0';
+const EMPTY = '';
+const GAP = ' ';
 const containerMain = document.createElement('div');
 const containerHeader = document.createElement('div');
 const textHeader = document.createElement('h1');
@@ -33,7 +35,6 @@ const linkIcon = document.createElement('a');
 const linkAuthor = document.createElement('a');
 const linkFlaticon = document.createElement('a');
 const iconCreditTextNode = document.createTextNode(' and used under the Flaticon Free License');
-
 const containers = [
     containerMain,
     containerHeader,
@@ -49,7 +50,6 @@ const containers = [
     containerFooter,
     containerIconCredit
   ];
-  
 
 let isFirstNumber = true;
 let isOperator = false;
@@ -58,13 +58,9 @@ let isDecimalPointDisabled = false;
 let isEqualError = false;
 let isZeroError = false;
 let isResult = false;
-let number1 = '0';
-let number2 = '';
-let operator = '';
-
-createButtonsOperators();
-createButtonsDigits();
-addEventListeners();
+let number1 = ZERO;
+let number2 = EMPTY;
+let operator = EMPTY;
 
 containers.forEach(container => {
     container.classList.add('container');
@@ -143,7 +139,73 @@ containerIconCredit.appendChild(document.createTextNode(' from '));
 containerIconCredit.appendChild(linkFlaticon);
 containerIconCredit.appendChild(iconCreditTextNode);
 
+createButtonsOperators();
+createButtonsDigits();
+addEventListeners();
 //
+function checkIfZero(valueToCheck) {
+    return valueToCheck === ZERO;
+}
+
+function handleFirstNumber(newValueForFirstNumber) {
+    if ((checkIfZero(number1) && !(checkIfZero(newValueForFirstNumber))) || isResult) {
+        number1 = newValueForFirstNumber;
+        replaceFirstNumber();
+
+        if(isResult) {
+            isResult = false;
+        }
+    } else {
+        number1 = add(number1, newValueForFirstNumber);
+        addToDisplay(newValueForFirstNumber);
+    }
+}
+
+function handleStartOfSecondNumber(valueToStartSecondNumber) {
+    isOperator = false;
+    isSecondNumber = true;
+    number2 = valueToStartSecondNumber;
+    addToDisplay(valueToStartSecondNumber);
+
+    if (isDecimalPointDisabled) {
+    enableButton(buttonDecimalPoint);
+    }
+
+    if (checkIfZero(digitValue) && operator === '/') {
+        showErrorMessage(errorZero);
+        isZeroError = true;
+        return;
+    }    
+}
+
+function handleContinueOfSecondNumber(valueToContinueSecondNumber) {
+    if (checkIfZero(number2) || number2 === '0.') {
+        hideErrorMessage(errorZero);
+        enableButton(buttonEqual, isEnableOperators = true);
+        
+        if (checkIfZero(number2)) {
+            number2 = valueToContinueSecondNumber;
+            deleteLastSymbol();
+        } else {
+            number2 = add(number2, valueToContinueSecondNumber); 
+        }    
+    } else {
+        number2 = add(number2, valueToContinueSecondNumber);
+    }  
+
+    addToDisplay(valueToContinueSecondNumber);
+}
+
+function handleDigitButton(digitValue) { 
+    if (isFirstNumber) { 
+        handleFirstNumber(digitValue);
+    } else if (isOperator && !isSecondNumber) { 
+        handleStartOfSecondNumber(digitValue);
+    } else {  
+        handleContinueOfSecondNumber(digitValue);
+    }
+} 
+
 function handleKeyDown(event) {
     const key = event.key;
   
@@ -201,10 +263,11 @@ function addEventListeners() {
     document.addEventListener('keydown', handleKeyDown);
     containerButtons.addEventListener('click', handleButtonClick);
 }
-//
+
+
 function clearAll() {
     isSecondNumber = false;
-    [number1, number2, operator] = ['0', '', ''];
+    [number1, number2, operator] = [ZERO, EMPTY, EMPTY];
     containerDisplay.textContent = number1;
 
     if (isDecimalPointDisabled) {
@@ -217,7 +280,6 @@ function clearAll() {
 }
 function handleKeyDown(event) {
     const key = event.key;
-    console.log(key);
   
     if (checkIfDigit(key)) {
       handleDigitButton(key);
@@ -246,14 +308,15 @@ function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when w
 
     containerDisplay.textContent = parseFloat(result.toFixed(5));
     
-    number1 = result;
+    number1 = result.toString();
     isResult = true;
-    number2 = ''; 
+    number2 = EMPTY; 
     isSecondNumber = false;
 
     if (isAfterEqualClick) {
         isFirstNumber = true;
         isOperator = false;
+        operator = EMPTY;
     } else {
         shiftFromFirstToOperator();
     }
@@ -327,14 +390,14 @@ function deleteLastSymbol() {
     if (isSecondNumber) {
         deleteSymbol('secondNumber', currentDisplay);
 
-        if (previousSymbol === ' ') {
+        if (previousSymbol === GAP) {
             isSecondNumber = false;
             isOperator = true;
         }
     } else if(isOperator) { 
-        if (currentSymbol === ' ') { 
+        if (currentSymbol === GAP) { 
             deleteSymbol('operator', currentDisplay);
-            operator = '';
+            operator = EMPTY;
 
             if (checkIfDigit(number1) && !isDecimalPointDisabled) {
                 disableButton(buttonDecimalPoint)
@@ -373,51 +436,7 @@ function replaceFirstNumber() {
     containerDisplay.textContent = number1;
 }
 
-function handleDigitButton(digitValue) {
 
-    if (isFirstNumber) {  // Working with the first number
-        if (number1 === '0') {
-            if (digitValue !== '0') {
-                number1 = digitValue;
-                replaceFirstNumber();
-            }
-        } else if (isResult) {
-            number1 = digitValue;
-            isResult = false;
-        } else {
-            number1 += digitValue;
-            addToDisplay(digitValue);
-        }
-    } else if (isOperator && !isSecondNumber) { // Start of the second number
-        isOperator = false;
-        isSecondNumber = true;
-        addToDisplay(digitValue);
-        number2 = digitValue;
-        enableButton(buttonDecimalPoint);
-
-        if (digitValue === '0' && operator === '/') {
-            showErrorMessage(errorZero);
-            isZeroError = true;
-            return;
-        }    
-    } else  {  // Continue the second number
-        if (number2 === '0') {
-            number2 = digitValue;
-            deleteLastSymbol();
-            hideErrorMessage(errorZero);
-            enableButton(buttonEqual, isEnableOperators=true);
-        } else {
-            if (number2 === '0.') {
-                enableButton(buttonEqual, isEnableOperators=true);
-                hideErrorMessage(errorZero);
-            }
-
-            number2 += digitValue;
-        }  
-
-        addToDisplay(digitValue);
-    }
-} 
 
 function showErrorMessage(errorToShow) {
     errorToShow.classList.remove('hidden');
