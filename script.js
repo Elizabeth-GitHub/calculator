@@ -1,4 +1,11 @@
-const OPERATORS = ['+', '-', '*', '/'];
+/*const OPERATORS = ['+', '-', '*', '/'];*/
+const OPERATORS = {
+    PLUS: '+',
+    MINUS: '-',
+    MULTIPLICATION: '*',
+    DIVISION: '/'
+}
+console.log(OPERATORS.DIVISION);
 const KEY_SYMBOLS = {
     DOT: '.',
     BACKSPACE: 'Backspace',
@@ -143,8 +150,44 @@ createButtonsOperators();
 createButtonsDigits();
 addEventListeners();
 //
+function add(addend1, addend2) {
+    return addend1 + addend2;
+}
+
+function  subtract(minuend, subtrahend) {
+    return minuend - subtrahend;
+}
+
+function multiply(factor1, factor2) {
+    return factor1 * factor2;
+}
+
+function divide(dividend, divisor) {
+    return dividend / divisor;
+}
+
+function operate(element1, element2, symbol) {
+    if (symbol === OPERATORS.PLUS) {
+        return add(element1, element2);
+    } else if (symbol === OPERATORS.MINUS) {
+        return subtract(element1, element2);
+    } else if (symbol === OPERATORS.MULTIPLICATION) {
+        return multiply(element1, element2);
+    } else if (symbol === OPERATORS.DIVISION) {
+        return divide(element1, element2);
+    }
+}
+
 function checkIfZero(valueToCheck) {
     return valueToCheck === ZERO;
+}
+
+function replaceFirstNumber() {
+    containerDisplay.textContent = number1;
+}
+
+function addToDisplay(valueToDisplay, gap=false) {
+    containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
 }
 
 function handleFirstNumber(newValueForFirstNumber) {
@@ -171,7 +214,7 @@ function handleStartOfSecondNumber(valueToStartSecondNumber) {
     enableButton(buttonDecimalPoint);
     }
 
-    if (checkIfZero(digitValue) && operator === '/') {
+    if (checkIfZero(valueToStartSecondNumber) && operator === OPERATORS.DIVISION) {
         showErrorMessage(errorZero);
         isZeroError = true;
         return;
@@ -182,7 +225,7 @@ function handleContinueOfSecondNumber(valueToContinueSecondNumber) {
     if (checkIfZero(number2) || number2 === '0.') {
         hideErrorMessage(errorZero);
         enableButton(buttonEqual, isEnableOperators = true);
-        
+
         if (checkIfZero(number2)) {
             number2 = valueToContinueSecondNumber;
             deleteLastSymbol();
@@ -428,13 +471,9 @@ function hideErrorMessage(errorToHide) {
     
 }
 
-function addToDisplay(valueToDisplay, gap=false) {
-    containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
-}
 
-function replaceFirstNumber() {
-    containerDisplay.textContent = number1;
-}
+
+
 
 
 
@@ -492,12 +531,13 @@ function handleOperatorButton(operatorValue) {
 }
 
 function createButtonsOperators() {
+    const keys = Object.keys(OPERATORS);
     
-    for (let i = 0; i < OPERATORS.length; i++) {
+    for (let i = 0; i < keys.length; i++) {
         const buttonOperator = document.createElement('button');
 
         buttonOperator.classList.add('button', 'button-operator');
-        buttonOperator.textContent = OPERATORS[i];
+        buttonOperator.textContent = OPERATORS[keys[i]];
         containerOperatorButtons.appendChild(buttonOperator);
     }
 }
@@ -520,32 +560,4 @@ function createButtonsDigits() {
     buttonDigit.textContent = i;
     containerDigitButtons.appendChild(buttonDigit);
     }  
-}
-
-function operate(element1, element2, symbol) {
-    if (symbol === '+') {
-        return add(element1, element2);
-    } else if (symbol === '-') {
-        return subtract(element1, element2);
-    } else if (symbol === '*') {
-        return multiply(element1, element2);
-    } else if (symbol === '/') {
-        return divide(element1, element2);
-    }
-}
-
-function add(addend1, addend2) {
-    return addend1 + addend2;
-}
-
-function  subtract(minuend, subtrahend) {
-    return minuend - subtrahend;
-}
-
-function multiply(factor1, factor2) {
-    return factor1 * factor2;
-}
-
-function divide(dividend, divisor) {
-    return dividend / divisor;
 }
