@@ -6,11 +6,11 @@ const OPERATORS = {
     DIVISION: '/'
 }
 console.log(OPERATORS.DIVISION);
-const KEY_SYMBOLS = {
+const SYMBOLS = {
     DOT: '.',
     BACKSPACE: 'Backspace',
     ESCAPE: 'Escape',
-    EQUALS: '=',
+    EQUAL: '=',
     ENTER: 'Enter'
 };
 const ZERO = '0';
@@ -88,10 +88,10 @@ creator.setAttribute('id', 'creator');
 containerIconCredit.setAttribute('id', 'container-iconcredit');
 buttonDecimalPoint.setAttribute('id', 'button-decimalpoint');
 buttonDecimalPoint.classList.add('button');
-buttonDecimalPoint.textContent = '.';
+buttonDecimalPoint.textContent = SYMBOLS.DOT;
 buttonEqual.setAttribute('id', 'button-equal');
 buttonEqual.classList.add('button');
-buttonEqual.textContent = '=';
+buttonEqual.textContent = SYMBOLS.EQUAL;
 buttonClear.classList.add('button', 'upper-button');
 buttonClear.textContent = 'CLEAR';
 buttonDelete.classList.add('button', 'upper-button');
@@ -224,11 +224,11 @@ function handleStartOfSecondNumber(valueToStartSecondNumber) {
 function handleContinueOfSecondNumber(valueToContinueSecondNumber) {
     if (checkIfZero(number2) || number2 === '0.') {
         hideErrorMessage(errorZero);
-        enableButton(buttonEqual, isEnableOperators = true);
 
         if (checkIfZero(number2)) {
-            number2 = valueToContinueSecondNumber;
             deleteLastSymbol();
+            number2 = valueToContinueSecondNumber;
+            isSecondNumber = true;
         } else {
             number2 = add(number2, valueToContinueSecondNumber); 
         }    
@@ -250,19 +250,19 @@ function handleDigitButton(digitValue) {
 } 
 
 function handleKeyDown(event) {
-    const key = event.key;
+    const keyPressed = event.key;
   
-    if (checkIfDigit(key)) {
-      handleDigitButton(key);
-    } else if (OPERATORS.includes(key)) {
-      handleOperatorButton(key);
-    } else if (key === KEY_SYMBOLS.DOT) {
+    if (checkIfDigit(keyPressed)) {
+      handleDigitButton(keyPressed);
+    } else if (Object.values(OPERATORS).includes(keyPressed)) {
+      handleOperatorButton(keyPressed);
+    } else if (keyPressed === SYMBOLS.DOT) {
       handleDecimalPointButton();
-    } else if (key === KEY_SYMBOLS.BACKSPACE) {
+    } else if (keyPressed === SYMBOLS.BACKSPACE) {
       deleteLastSymbol();
-    } else if (key === KEY_SYMBOLS.ESCAPE) {
+    } else if (keyPressed === SYMBOLS.ESCAPE) {
       clearAll();
-    } else if (key === KEY_SYMBOLS.EQUALS || key === KEY_SYMBOLS.ENTER) {
+    } else if (keyPressed === SYMBOLS.EQUAL || keyPressed === SYMBOLS.ENTER) {
       handleEqualSign();
     } else {
       event.preventDefault();
@@ -321,25 +321,6 @@ function clearAll() {
         hideErrorMessage(errorZero);
     }
 }
-function handleKeyDown(event) {
-    const key = event.key;
-  
-    if (checkIfDigit(key)) {
-      handleDigitButton(key);
-    } else if (OPERATORS.includes(key)) {
-        handleOperatorButton(key);
-    } else if (key === '.') {
-        handleDecimalPointButton();
-    } else if (key === 'Backspace') {
-        deleteLastSymbol();
-    } else if (key === 'Escape') {
-        clearAll();
-    } else if (key === '=' || key === 'Enter') {
-        handleEqualSign();
-    } else {
-        event.preventDefault();
-    }
-  }
 
 function shiftFromFirstToOperator() {
     isFirstNumber = false;
