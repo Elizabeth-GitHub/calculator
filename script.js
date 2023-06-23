@@ -1,11 +1,9 @@
-/*const OPERATORS = ['+', '-', '*', '/'];*/
 const OPERATORS = {
     PLUS: '+',
     MINUS: '-',
     MULTIPLICATION: '*',
     DIVISION: '/'
 }
-console.log(OPERATORS.DIVISION);
 const SYMBOLS = {
     DOT: '.',
     BACKSPACE: 'Backspace',
@@ -16,6 +14,7 @@ const SYMBOLS = {
 const ZERO = '0';
 const EMPTY = '';
 const GAP = ' ';
+
 const containerMain = document.createElement('div');
 const containerHeader = document.createElement('div');
 const textHeader = document.createElement('h1');
@@ -148,12 +147,45 @@ containerIconCredit.appendChild(iconCreditTextNode);
 
 createButtonsOperators();
 createButtonsDigits();
-addEventListeners();
 setDefaultValues();
+addEventListeners();
 //
+
+function createButtonsOperators() {
+    const keys = Object.keys(OPERATORS);
+    
+    for (let i = 0; i < keys.length; i++) {
+        const buttonOperator = document.createElement('button');
+
+        buttonOperator.classList.add('button', 'button-operator');
+        buttonOperator.textContent = OPERATORS[keys[i]];
+        containerOperatorButtons.appendChild(buttonOperator);
+    }
+}
+
+function createButtonsDigits() {  
+    containerDigitButtons.appendChild(buttonDecimalPoint);
+
+    const buttonZero = document.createElement('button');
+
+    buttonZero.classList.add('button', 'button-digit');
+    buttonZero.textContent = ZERO;
+    containerDigitButtons.appendChild(buttonZero);
+    containerDigitButtons.appendChild(buttonEqual);
+
+   for (let i = 1; i < 10; i++) {
+    const buttonDigit = document.createElement('button');
+
+    buttonDigit.classList.add('button', 'button-digit');
+    buttonDigit.textContent = i;
+    containerDigitButtons.appendChild(buttonDigit);
+    }  
+}
+
 function setDefaultValues() {
     [number1, number2, operator] = [ZERO, EMPTY, EMPTY];
 }
+///
 
 function add(addend1, addend2) {
     return addend1 + addend2;
@@ -195,14 +227,18 @@ function addToDisplay(valueToDisplay, gap=false) {
     containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
 }
 
+function disableIsResultIfActive() {
+    if (isResult) {
+        isResult = false;
+    }
+}
+
 function handleFirstNumber(newValueForFirstNumber) {
     if ((checkIfZero(number1) && !(checkIfZero(newValueForFirstNumber))) || isResult) {
         number1 = newValueForFirstNumber;
         replaceFirstNumber();
 
-        if(isResult) {
-            isResult = false;
-        }
+        disableIsResultIfActive();
     } else {
         number1 = add(number1, newValueForFirstNumber);
         addToDisplay(newValueForFirstNumber);
@@ -248,17 +284,7 @@ function showErrorMessage(errorToShow) {
     }
 }
 
-function hideErrorMessage(errorToHide) {
-    errorToHide.classList.add('hidden');
 
-    if (errorToHide === errorZero) {
-        enableButton(buttonEqual, isEnableOperators=true);
-        isZeroError = false;
-    } else {
-        isEqualError = false;
-    }
-    
-}
 
 function handleStartOfSecondNumber(valueToStartSecondNumber) {
     isOperator = false;
@@ -274,25 +300,32 @@ function handleStartOfSecondNumber(valueToStartSecondNumber) {
     }    
 }
 
-function deleteCurrentSymbol(typeOfDeletion, displayCurrent) {
-    if (typeOfDeletion === 'operator') {
-        containerDisplay.textContent = displayCurrent.slice(0, -3);
-    } else {
-        const currentDisplayWithoutLastSymbol = displayCurrent.slice(0, -1);
-
-        if (typeOfDeletion === 'secondNumber') {
-            containerDisplay.textContent = currentDisplayWithoutLastSymbol;
-            number2 = number2.slice(0, -1);
-        } else if (typeOfDeletion === 'firstNumber') {
-            const firstNumberUpdated = (currentDisplayWithoutLastSymbol.length > 0) ?currentDisplayWithoutLastSymbol : '0';
-            containerDisplay.textContent = firstNumberUpdated;
-            number1 =  firstNumberUpdated;
-        }
-    } 
-} 
 
 function checkIfDigit(symbolToCheck) {
     return (!isNaN(parseFloat(symbolToCheck)));
+}
+
+function handleOperatorDeletion(currentExpression) {
+    containerDisplay.textContent = currentExpression.slice(0, -3);
+}
+
+function handleFirstNumberDeletion(firstNumberWithoutLastSymbol) {
+    const firstNumberUpdated = (firstNumberWithoutLastSymbol.length > 0) ?firstNumberWithoutLastSymbol : '0';
+            
+    containerDisplay.textContent = firstNumberUpdated;
+    number1 =  firstNumberUpdated;
+}
+
+function handleSecondNumberDeletion(currentExpressionWithoutLastSymbol, symbolPrevious) {
+
+
+    containerDisplay.textContent = currentExpressionWithoutLastSymbol;
+    number2 = number2.slice(0, -1);
+
+    if (symbolPrevious === GAP) {
+        isSecondNumber = false;
+        isOperator = true;
+    }
 }
 
 function deleteLastSymbol() {
@@ -300,38 +333,45 @@ function deleteLastSymbol() {
     const currentDisplayLength = containerDisplay.textContent.length;
     const currentSymbol = currentDisplay[currentDisplayLength - 1];
     const previousSymbol = currentDisplay[currentDisplayLength - 2]
+    
 
     if (currentSymbol === SYMBOLS.DOT) {
         enableButton(buttonDecimalPoint);
     }
 
-    if (isResult) {
-        isResult = false;
-    }
+    disableIsResultIfActive()
+    const currentDisplayWithoutLastSymbol = currentDisplay.slice(0, -1);
 
     if (isSecondNumber) {
-        deleteCurrentSymbol('secondNumber', currentDisplay);
-
-        if (previousSymbol === GAP) {
-            isSecondNumber = false;
-            isOperator = true;
-        }
+        handleSecondNumberDeletion(currentDisplayWithoutLastSymbol, previousSymbol);        
     } else if(isOperator) { 
         if (currentSymbol === GAP) { 
-            deleteCurrentSymbol('operator', currentDisplay);
+            handleOperatorDeletion(currentDisplay);
             operator = EMPTY;
 
-            if (checkIfDigit(number1) && !isDecimalPointDisabled) {
+            if (checkIfDigit(number1) && !isDecimalPointDisabled) { //???
                 disableButton(buttonDecimalPoint)
             } 
         } else { 
             isOperator = false;
             isFirstNumber = true;         
-            deleteCurrentSymbol('firstNumber', currentDisplay);
+            handleFirstNumberDeletion(currentDisplayWithoutLastSymbol);
         }
     } else if (isFirstNumber) {
-        deleteCurrentSymbol('firstNumber', currentDisplay);
+        handleFirstNumberDeletion(currentDisplayWithoutLastSymbol);
     }
+}
+
+function hideErrorMessage(errorToHide) {
+    errorToHide.classList.add('hidden');
+
+    if (errorToHide === errorZero) {
+        enableButton(buttonEqual, isEnableOperators=true);
+        isZeroError = false;
+    } else {
+        isEqualError = false;
+    }
+    
 }
 
 function handleContinueOfSecondNumber(valueToContinueSecondNumber) {
@@ -412,6 +452,21 @@ function handleKeyDown(event) {
     }
 }
 
+function handleDecimalPointButton() {
+    const symbolPoint = buttonDecimalPoint.textContent;
+
+    if (isFirstNumber) {
+        number1 += symbolPoint;
+
+        disableIsResultIfActive()
+    } else {
+        number2 += symbolPoint;
+    }
+
+    addToDisplay(symbolPoint);
+    disableButton(buttonDecimalPoint);
+}
+
 function handleButtonClick(event) {
     const buttonClicked = event.target;
 
@@ -447,6 +502,7 @@ function addEventListeners() {
     document.addEventListener('keydown', handleKeyDown);
     containerButtons.addEventListener('click', handleButtonClick);
 }
+/////
 
 function enableDecimalPointIfDisabled() {
     if (isDecimalPointDisabled) {
@@ -505,54 +561,3 @@ function handleEqualSign(){
     getResult();
 }
 
-function handleDecimalPointButton() {
-    const symbolPoint = buttonDecimalPoint.textContent;
-
-    if (isFirstNumber) {
-        number1 += symbolPoint;
-
-        if (isResult) {
-            isResult = false;
-        }
-    } else {
-        number2 += symbolPoint;
-    }
-
-    addToDisplay(symbolPoint);
-    disableButton(buttonDecimalPoint);
-}
-
-
-
-
-function createButtonsOperators() {
-    const keys = Object.keys(OPERATORS);
-    
-    for (let i = 0; i < keys.length; i++) {
-        const buttonOperator = document.createElement('button');
-
-        buttonOperator.classList.add('button', 'button-operator');
-        buttonOperator.textContent = OPERATORS[keys[i]];
-        containerOperatorButtons.appendChild(buttonOperator);
-    }
-}
-
-function createButtonsDigits() {  
-    containerDigitButtons.appendChild(buttonDecimalPoint);
-
-    const buttonZero = document.createElement('button');
-
-    buttonZero.classList.add('button', 'button-digit');
-    buttonZero.textContent = '0';
-    containerDigitButtons.appendChild(buttonZero);
-
-    containerDigitButtons.appendChild(buttonEqual);
-
-   for (let i = 1; i < 10; i++) {
-    const buttonDigit = document.createElement('button');
-
-    buttonDigit.classList.add('button', 'button-digit');
-    buttonDigit.textContent = i;
-    containerDigitButtons.appendChild(buttonDigit);
-    }  
-}
