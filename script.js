@@ -234,12 +234,26 @@ function disableIsResultIfActive() {
     }
 }
 
+function preventDoubleZero(whichNumber, newValue) { // whichNumber: 'first' or 'second'
+    if (!checkIfZero(newValue)) {
+        if (whichNumber === 'first') {
+            number1 = newValue;
+            replaceFirstNumber();
+        }
+    }
+}
+
 function handleFirstNumber(newValueForFirstNumber) {
-    if ((checkIfZero(number1) && !(checkIfZero(newValueForFirstNumber))) || isResult) {
+    if (checkIfZero) {
+        preventDoubleZero('first', newValueForFirstNumber);
+    }
+    else if ((checkIfZero(number1) && !(checkIfZero(newValueForFirstNumber))) || isResult) {
         number1 = newValueForFirstNumber;
         replaceFirstNumber();
 
         disableIsResultIfActive();
+    } else if (checkIfZero(number1) && (checkIfZero(newValueForFirstNumber))) {
+        return
     } else {
         number1 = add(number1, newValueForFirstNumber);
         addToDisplay(newValueForFirstNumber);
@@ -387,9 +401,13 @@ function handleContinueOfSecondNumber(valueToContinueSecondNumber) {
         hideErrorMessage(errorZero);
 
         if (checkIfZero(number2)) {
+            if (checkIfZero(valueToContinueSecondNumber)) {
+                return;
+            } else {
             deleteLastSymbol();
             number2 = valueToContinueSecondNumber;
             isSecondNumber = true;
+            }
         } else {
             number2 = add(number2, valueToContinueSecondNumber); 
         }    
