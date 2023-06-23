@@ -65,9 +65,9 @@ let isDecimalPointDisabled = false;
 let isEqualError = false;
 let isZeroError = false;
 let isResult = false;
-let number1 = ZERO;
-let number2 = EMPTY;
-let operator = EMPTY;
+let number1;
+let number2;
+let operator;
 
 containers.forEach(container => {
     container.classList.add('container');
@@ -149,7 +149,12 @@ containerIconCredit.appendChild(iconCreditTextNode);
 createButtonsOperators();
 createButtonsDigits();
 addEventListeners();
+setDefaultValues();
 //
+function setDefaultValues() {
+    [number1, number2, operator] = [ZERO, EMPTY, EMPTY];
+}
+
 function add(addend1, addend2) {
     return addend1 + addend2;
 }
@@ -204,21 +209,129 @@ function handleFirstNumber(newValueForFirstNumber) {
     }
 }
 
+function enableButton(buttonToEnable, isEnableOperators=false) {
+    if (isEnableOperators) {
+        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToEnable => {
+            buttonOperatorToEnable.disabled = false;
+        });
+    }
+
+    buttonToEnable.disabled = false;
+
+    if (buttonToEnable === buttonDecimalPoint) {
+        isDecimalPointDisabled = false;
+    }
+}
+
+function disableButton(buttonToDisable, isDisableOperators=false) {
+    if (isDisableOperators) {
+        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToDisable => {
+            buttonOperatorToDisable.disabled = true;
+        });
+    }
+
+    buttonToDisable.disabled = true;
+
+    if (buttonToDisable === buttonDecimalPoint) {
+        isDecimalPointDisabled = true;
+    }
+} 
+
+function showErrorMessage(errorToShow) {
+    errorToShow.classList.remove('hidden');
+
+    if (errorToShow === errorZero) {
+        disableButton(buttonEqual, isDisableOperators=true);
+        isZeroError = true;
+    } else {
+        isEqualError = true;
+    }
+}
+
+function hideErrorMessage(errorToHide) {
+    errorToHide.classList.add('hidden');
+
+    if (errorToHide === errorZero) {
+        enableButton(buttonEqual, isEnableOperators=true);
+        isZeroError = false;
+    } else {
+        isEqualError = false;
+    }
+    
+}
+
 function handleStartOfSecondNumber(valueToStartSecondNumber) {
     isOperator = false;
     isSecondNumber = true;
     number2 = valueToStartSecondNumber;
     addToDisplay(valueToStartSecondNumber);
 
-    if (isDecimalPointDisabled) {
-    enableButton(buttonDecimalPoint);
-    }
+    enableDecimalPointIfDisabled();
 
     if (checkIfZero(valueToStartSecondNumber) && operator === OPERATORS.DIVISION) {
         showErrorMessage(errorZero);
-        isZeroError = true;
         return;
     }    
+}
+
+function deleteCurrentSymbol(typeOfDeletion, displayCurrent) {
+    if (typeOfDeletion === 'operator') {
+        containerDisplay.textContent = displayCurrent.slice(0, -3);
+    } else {
+        const currentDisplayWithoutLastSymbol = displayCurrent.slice(0, -1);
+
+        if (typeOfDeletion === 'secondNumber') {
+            containerDisplay.textContent = currentDisplayWithoutLastSymbol;
+            number2 = number2.slice(0, -1);
+        } else if (typeOfDeletion === 'firstNumber') {
+            const firstNumberUpdated = (currentDisplayWithoutLastSymbol.length > 0) ?currentDisplayWithoutLastSymbol : '0';
+            containerDisplay.textContent = firstNumberUpdated;
+            number1 =  firstNumberUpdated;
+        }
+    } 
+} 
+
+function checkIfDigit(symbolToCheck) {
+    return (!isNaN(parseFloat(symbolToCheck)));
+}
+
+function deleteLastSymbol() {
+    const currentDisplay = containerDisplay.textContent;
+    const currentDisplayLength = containerDisplay.textContent.length;
+    const currentSymbol = currentDisplay[currentDisplayLength - 1];
+    const previousSymbol = currentDisplay[currentDisplayLength - 2]
+
+    if (currentSymbol === SYMBOLS.DOT) {
+        enableButton(buttonDecimalPoint);
+    }
+
+    if (isResult) {
+        isResult = false;
+    }
+
+    if (isSecondNumber) {
+        deleteCurrentSymbol('secondNumber', currentDisplay);
+
+        if (previousSymbol === GAP) {
+            isSecondNumber = false;
+            isOperator = true;
+        }
+    } else if(isOperator) { 
+        if (currentSymbol === GAP) { 
+            deleteCurrentSymbol('operator', currentDisplay);
+            operator = EMPTY;
+
+            if (checkIfDigit(number1) && !isDecimalPointDisabled) {
+                disableButton(buttonDecimalPoint)
+            } 
+        } else { 
+            isOperator = false;
+            isFirstNumber = true;         
+            deleteCurrentSymbol('firstNumber', currentDisplay);
+        }
+    } else if (isFirstNumber) {
+        deleteCurrentSymbol('firstNumber', currentDisplay);
+    }
 }
 
 function handleContinueOfSecondNumber(valueToContinueSecondNumber) {
@@ -307,15 +420,19 @@ function addEventListeners() {
     containerButtons.addEventListener('click', handleButtonClick);
 }
 
-
-function clearAll() {
-    isSecondNumber = false;
-    [number1, number2, operator] = [ZERO, EMPTY, EMPTY];
-    containerDisplay.textContent = number1;
-
+function enableDecimalPointIfDisabled() {
     if (isDecimalPointDisabled) {
         enableButton(buttonDecimalPoint);
     }
+}
+
+
+function clearAll() {
+    isSecondNumber = false;
+    setDefaultValues();
+    containerDisplay.textContent = number1;
+
+    enableDecimalPointIfDisabled();  
 
     if (isZeroError) {
         hideErrorMessage(errorZero);
@@ -347,15 +464,14 @@ function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when w
 
     if (!Number.isInteger(result)) {
         disableButton(buttonDecimalPoint);
-    } else if (isDecimalPointDisabled) {
-        enableButton(buttonDecimalPoint);
+    } else {
+        enableDecimalPointIfDisabled();
     } 
 }
 
 function handleEqualSign(){
     if (!isSecondNumber) {
         showErrorMessage(errorEqual);
-        isEqualError = true;
         return;
     }
 
@@ -379,120 +495,7 @@ function handleDecimalPointButton() {
     disableButton(buttonDecimalPoint);
 }
 
-function deleteSymbol(typeOfDeletion, displayCurrent) {
 
-    if (typeOfDeletion === 'operator') {
-        containerDisplay.textContent = displayCurrent.slice(0, -3);
-    } else {
-        const currentDisplayWithoutLastSymbol = displayCurrent.slice(0, -1);
-
-        if (typeOfDeletion === 'secondNumber') {
-            containerDisplay.textContent = currentDisplayWithoutLastSymbol;
-            number2 = number2.slice(0, -1);
-        } else if (typeOfDeletion === 'firstNumber') {
-            containerDisplay.textContent = (currentDisplayWithoutLastSymbol.length > 0) ?currentDisplayWithoutLastSymbol : '0';
-            number1 =  (currentDisplayWithoutLastSymbol.length > 0) ?currentDisplayWithoutLastSymbol : '0';
-        }
-    } 
-} 
-
-
-function deleteLastSymbol() {
-    const currentDisplay = containerDisplay.textContent;
-    const currentDisplayLength = containerDisplay.textContent.length;
-    const currentSymbol = currentDisplay[currentDisplayLength - 1];
-    const previousSymbol = currentDisplay[currentDisplayLength - 2]
-
-    if (currentSymbol === '.') {
-        enableButton(buttonDecimalPoint);
-    }
-
-    if (isResult) {
-        isResult = false;
-    }
-
-    if (isSecondNumber) {
-        deleteSymbol('secondNumber', currentDisplay);
-
-        if (previousSymbol === GAP) {
-            isSecondNumber = false;
-            isOperator = true;
-        }
-    } else if(isOperator) { 
-        if (currentSymbol === GAP) { 
-            deleteSymbol('operator', currentDisplay);
-            operator = EMPTY;
-
-            if (checkIfDigit(number1) && !isDecimalPointDisabled) {
-                disableButton(buttonDecimalPoint)
-            } 
-        } else { 
-            isOperator = false;
-            isFirstNumber = true;         
-            deleteSymbol('firstNumber', currentDisplay);
-        }
-    } else if (isFirstNumber) {
-        deleteSymbol('firstNumber', currentDisplay);
-    }
-}
-
-function checkIfDigit(symbolToCheck) {
-    return (!isNaN(parseFloat(symbolToCheck)));
-}
-
-function hideErrorMessage(errorToHide) {
-    errorToHide.classList.add('hidden');
-
-    if (errorToHide === errorZero) {
-        enableButton(buttonEqual, isEnableOperators=true);
-        isZeroError = false;
-    } else {
-        isEqualError = false;
-    }
-    
-}
-
-
-
-
-
-
-
-function showErrorMessage(errorToShow) {
-    errorToShow.classList.remove('hidden');
-
-    if (errorToShow === errorZero) {
-        disableButton(buttonEqual, isDisableOperators=true);
-}
-}
-
-function enableButton(buttonToEnable, isEnableOperators=false) {
-    if (isEnableOperators) {
-        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToEnable => {
-            buttonOperatorToEnable.disabled = false;
-        });
-    }
-
-    buttonToEnable.disabled = false;
-
-    if (buttonToEnable === buttonDecimalPoint) {
-        isDecimalPointDisabled = false;
-    }
-}
-
-function disableButton(buttonToDisable, isDisableOperators=false) {
-    if (isDisableOperators) {
-        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToDisable => {
-            buttonOperatorToDisable.disabled = true;
-        });
-    }
-
-    buttonToDisable.disabled = true;
-
-    if (buttonToDisable === buttonDecimalPoint) {
-        isDecimalPointDisabled = true;
-    }
-}
 function handleOperatorButton(operatorValue) {
     disableButton(buttonDecimalPoint);
 
