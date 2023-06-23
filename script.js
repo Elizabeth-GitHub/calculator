@@ -452,7 +452,11 @@ function handleKeyDown(event) {
             handleOperatorButton(keyPressed);
         }
     } else if (keyPressed === SYMBOLS.DOT) {
-      handleDecimalPointButton();
+        if (isDecimalPointDisabled) {
+            event.preventDefault();
+        } else {
+            handleDecimalPointButton();
+        }
     } else if (keyPressed === SYMBOLS.BACKSPACE) {
       deleteLastSymbol();
     } else if (keyPressed === SYMBOLS.ESCAPE) {
