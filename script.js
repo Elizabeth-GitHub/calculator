@@ -362,8 +362,38 @@ function handleDigitButton(digitValue) {
     }
 } 
 
+function handleOperatorButton(operatorValue) {
+    disableButton(buttonDecimalPoint);
+
+    if (isOperator) { // Display and use the last operator if the user has clicked more than one in a row
+        deleteLastSymbol();
+    }
+
+    if (!isSecondNumber) {
+        shiftFromFirstToOperator();   
+    } else {
+        getResult(isAfterEqualClick=false);
+    }
+
+    addToDisplay(operatorValue, gap=true)
+
+    operator = operatorValue;  
+}
+
+function hideErrorIfEqualErrorDisplayed(inputType, symbolTyped) { // typeOfInput: keyboard or mouse
+    if (isEqualError) {
+        if (inputType === 'mouse' && symbolTyped !== buttonEqual) {
+            hideErrorMessage(errorEqual);
+        } else if (inputType === 'keyboard' && symbolTyped !== SYMBOLS.ENTER && symbolTyped !== SYMBOLS.EQUAL) {
+            hideErrorMessage(errorEqual);
+        }
+    }
+}
+
 function handleKeyDown(event) {
     const keyPressed = event.key;
+
+    hideErrorIfEqualErrorDisplayed('keyboard', keyPressed);
   
     if (checkIfDigit(keyPressed)) {
       handleDigitButton(keyPressed);
@@ -385,9 +415,7 @@ function handleKeyDown(event) {
 function handleButtonClick(event) {
     const buttonClicked = event.target;
 
-    if (isEqualError && buttonClicked !== buttonEqual) {
-      hideErrorMessage(errorEqual);
-    }
+    hideErrorIfEqualErrorDisplayed('mouse', buttonClicked);
 
     switch (buttonClicked) {
         case buttonDecimalPoint:
@@ -425,7 +453,6 @@ function enableDecimalPointIfDisabled() {
         enableButton(buttonDecimalPoint);
     }
 }
-
 
 function clearAll() {
     isSecondNumber = false;
@@ -496,23 +523,7 @@ function handleDecimalPointButton() {
 }
 
 
-function handleOperatorButton(operatorValue) {
-    disableButton(buttonDecimalPoint);
 
-    if (isOperator) { // Display and use the last operator if the user has clicked more than one in a row
-        deleteLastSymbol();
-    }
-
-    if (!isSecondNumber) {
-        shiftFromFirstToOperator();   
-    } else {
-        getResult(isAfterEqualClick=false);
-    }
-
-    addToDisplay(operatorValue, gap=true)
-
-    operator = operatorValue;  
-}
 
 function createButtonsOperators() {
     const keys = Object.keys(OPERATORS);
