@@ -264,7 +264,7 @@ function handleFirstNumber(newValueForFirstNumber) {
         addToDisplay(newValueForFirstNumber);
     }
 }
-///
+
 function enableOperators() {
     Array.from(containerOperatorButtons.children).forEach(buttonOperatorToEnable => {
         buttonOperatorToEnable.disabled = false;
@@ -281,26 +281,29 @@ function enableButton(buttonToEnable) {
     }
 }
 
-function disableButton(buttonToDisable, isDisableOperators=false) {
-    if (isDisableOperators) {
-        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToDisable => {
-            buttonOperatorToDisable.disabled = true;
-        });
-        areOperatorsDisabled = true;
-    }
+function disableOperators() {
+    Array.from(containerOperatorButtons.children).forEach(buttonOperatorToDisable => {
+        buttonOperatorToDisable.disabled = true;
+    });
 
+    areOperatorsDisabled = true;
+}
+
+function disableButton(buttonToDisable) {
     buttonToDisable.disabled = true;
 
     if (buttonToDisable === buttonDecimalPoint) {
         isDecimalPointDisabled = true;
     }
-} 
+}
 
 function showErrorMessage(errorToShow) {
     errorToShow.classList.remove('hidden');
 
     if (errorToShow === errorZero) {
-        disableButton(buttonEqual, isDisableOperators=true);
+        disableButton(buttonEqual);
+        disableOperators();
+
         isZeroError = true;
     } else {
         isEqualError = true;
@@ -311,14 +314,42 @@ function handleStartOfSecondNumber(valueToStartSecondNumber) {
     isOperator = false;
     isSecondNumber = true;
     number2 = valueToStartSecondNumber;
-    addToDisplay(valueToStartSecondNumber);
 
+    addToDisplay(valueToStartSecondNumber);
     enableDecimalPointIfDisabled();
 
     if (checkIfZero(valueToStartSecondNumber) && operator === OPERATORS.DIVISION) {
         showErrorMessage(errorZero);
-        return;
     }    
+}
+
+function hideErrorMessage(errorToHide) {
+    errorToHide.classList.add('hidden');
+
+    if (errorToHide === errorZero) {
+        enableButton(buttonEqual)
+        enableOperators();
+
+        isZeroError = false;
+    } else {
+        isEqualError = false;
+    }
+    
+}
+
+function handleContinueOfSecondNumber(valueToContinueSecondNumber) {
+    const isSecondNumberZero = checkIfZero(number2);
+    
+    if (!isSecondNumberZero || number2 === '0.') { 
+        hideErrorMessage(errorZero);
+    }
+
+    if (isSecondNumberZero) {
+        preventDoubleZero('second', valueToContinueSecondNumber);
+    } else {
+        number2 = add(number2, valueToContinueSecondNumber);
+        addToDisplay(valueToContinueSecondNumber);
+    }
 }
 
 function checkIfDigit(symbolToCheck) {
@@ -330,7 +361,7 @@ function handleOperatorDeletion(currentExpression) {
 }
 
 function handleFirstNumberDeletion(firstNumberWithoutLastSymbol) {
-    const firstNumberUpdated = (firstNumberWithoutLastSymbol.length > 0) ?firstNumberWithoutLastSymbol : '0';
+    const firstNumberUpdated = (firstNumberWithoutLastSymbol.length > 0) ? firstNumberWithoutLastSymbol : '0';
             
     containerDisplay.textContent = firstNumberUpdated;
     number1 =  firstNumberUpdated;
@@ -362,62 +393,26 @@ function deleteLastSymbol() {
     if (isOperator) {
         if (currentSymbol === GAP) { 
             handleOperatorDeletion(currentDisplay);
+
             operator = EMPTY;
 
-            /*if (checkIfDigit(number1) && !isDecimalPointDisabled) { 
-                disableButton(buttonDecimalPoint)
-            } */
             if (!isDecimalPointDisabled) { 
                 disableButton(buttonDecimalPoint)
             }
         } else { 
             isOperator = false;
-            isFirstNumber = true;         
+            isFirstNumber = true; 
+
             handleFirstNumberDeletion(currentDisplayWithoutLastSymbol);
         }
-    }
+    }  else {
+        const currentDisplayWithoutLastSymbol = currentDisplay.slice(0, -1);
 
-
-
-    const currentDisplayWithoutLastSymbol = currentDisplay.slice(0, -1);
-
-    if (isSecondNumber) {
-        handleSecondNumberDeletion(currentDisplayWithoutLastSymbol, previousSymbol);        
-    } else if(isOperator) { 
-        
-    } else if (isFirstNumber) {
-        handleFirstNumberDeletion(currentDisplayWithoutLastSymbol);
-    }
-}
-
-function hideErrorMessage(errorToHide) {
-    errorToHide.classList.add('hidden');
-
-    if (errorToHide === errorZero) {
-        enableButton(buttonEqual)
-        enableOperators();
-        isZeroError = false;
-    } else {
-        isEqualError = false;
-    }
-    
-}
-
-function handleContinueOfSecondNumber(valueToContinueSecondNumber) {
-    const isSecondNumberZero = checkIfZero(number2);
-    
-    if (!isSecondNumberZero || number2 === '0.') { /// ???
-        hideErrorMessage(errorZero);
-    }
-
-    if (isSecondNumberZero) {
-        preventDoubleZero('second', valueToContinueSecondNumber);
-    } else {
-        number2 = add(number2, valueToContinueSecondNumber);
-        addToDisplay(valueToContinueSecondNumber);
-            /*deleteLastSymbol();
-            number2 = valueToContinueSecondNumber;
-            isSecondNumber = true;*/
+        if (isSecondNumber) {
+            handleSecondNumberDeletion(currentDisplayWithoutLastSymbol, previousSymbol);          
+        } else if (isFirstNumber) {
+            handleFirstNumberDeletion(currentDisplayWithoutLastSymbol);
+        }
     }
 }
 
@@ -430,6 +425,11 @@ function handleDigitButton(digitValue) {
         handleContinueOfSecondNumber(digitValue);
     }
 } 
+
+function shiftFromFirstToOperator() {
+    isFirstNumber = false;
+    isOperator = true;
+}
 
 function handleOperatorButton(operatorValue) {
     disableButton(buttonDecimalPoint);
@@ -449,16 +449,16 @@ function handleOperatorButton(operatorValue) {
     operator = operatorValue;  
 }
 
-function hideErrorIfEqualErrorDisplayed(inputType, symbolTyped) { // typeOfInput: keyboard or mouse
+function hideErrorIfEqualErrorDisplayed(inputSource, symbolTyped) { // inputSource: keyboard or mouse
     if (isEqualError) {
-        if (inputType === 'mouse' && symbolTyped !== buttonEqual) {
+        if (inputSource === 'mouse' && symbolTyped !== buttonEqual) {
             hideErrorMessage(errorEqual);
-        } else if (inputType === 'keyboard' && symbolTyped !== SYMBOLS.ENTER && symbolTyped !== SYMBOLS.EQUAL) {
+        } else if (inputSource === 'keyboard' && symbolTyped !== SYMBOLS.ENTER && symbolTyped !== SYMBOLS.EQUAL) {
             hideErrorMessage(errorEqual);
         }
     }
 }
-
+//////////////////
 function handleKeyDown(event) {
     const keyPressed = event.key;
 
@@ -543,7 +543,7 @@ function addEventListeners() {
     document.addEventListener('keydown', handleKeyDown);
     containerButtons.addEventListener('click', handleButtonClick);
 }
-/////
+
 
 function enableDecimalPointIfDisabled() {
     if (isDecimalPointDisabled) {
@@ -563,10 +563,7 @@ function clearAll() {
     }
 }
 
-function shiftFromFirstToOperator() {
-    isFirstNumber = false;
-    isOperator = true;
-}
+
 
 function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when we enter the function after the clicking '=', false after clicking any other operator.
     let result = operate(parseFloat(number1), parseFloat(number2), operator);
