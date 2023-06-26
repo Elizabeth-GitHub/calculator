@@ -186,7 +186,6 @@ function createButtonsDigits() {
 function setDefaultValues() {
     [number1, number2, operator] = [ZERO, EMPTY, EMPTY];
 }
-///
 
 function add(addend1, addend2) {
     return addend1 + addend2;
@@ -216,7 +215,6 @@ function operate(element1, element2, symbol) {
     }
 }
 
-
 function addToDisplay(valueToDisplay, gap=false) {
     containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
 }
@@ -242,8 +240,6 @@ function preventDoubleZero(whichNumber, newValue) { // whichNumber: 'first' or '
             number2 = newValue;
             replaceNumber('secondNumber');
         }
-    } else {
-        return;
     }
 }
 
@@ -268,15 +264,16 @@ function handleFirstNumber(newValueForFirstNumber) {
         addToDisplay(newValueForFirstNumber);
     }
 }
+///
+function enableOperators() {
+    Array.from(containerOperatorButtons.children).forEach(buttonOperatorToEnable => {
+        buttonOperatorToEnable.disabled = false;
+    });
 
-function enableButton(buttonToEnable, isEnableOperators=false) {
-    if (isEnableOperators) {
-        Array.from(containerOperatorButtons.children).forEach(buttonOperatorToEnable => {
-            buttonOperatorToEnable.disabled = false;
-        });
-        areOperatorsDisabled = false;
-    }
+    areOperatorsDisabled = false;
+}
 
+function enableButton(buttonToEnable) {
     buttonToEnable.disabled = false;
 
     if (buttonToEnable === buttonDecimalPoint) {
@@ -397,7 +394,8 @@ function hideErrorMessage(errorToHide) {
     errorToHide.classList.add('hidden');
 
     if (errorToHide === errorZero) {
-        enableButton(buttonEqual, isEnableOperators=true);
+        enableButton(buttonEqual)
+        enableOperators();
         isZeroError = false;
     } else {
         isEqualError = false;
