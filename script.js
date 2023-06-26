@@ -221,11 +221,6 @@ function addToDisplay(valueToDisplay, gap=false) {
     containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
 }
 
-function disableIsResultIfActive() {
-    if (isResult) {
-        isResult = false;
-    }
-}
 function checkIfZero(valueToCheck) {
     return valueToCheck === ZERO;
 }
@@ -247,20 +242,27 @@ function preventDoubleZero(whichNumber, newValue) { // whichNumber: 'first' or '
             number2 = newValue;
             replaceNumber('secondNumber');
         }
+    } else {
+        return;
+    }
+}
+
+function disableIsResultIfActive() {
+    if (isResult) {
+        isResult = false;
     }
 }
 
 function handleFirstNumber(newValueForFirstNumber) {
-    if (checkIfZero(number1)) {
-        preventDoubleZero('first', newValueForFirstNumber);
-    }
-    else if ((checkIfZero(number1) && !(checkIfZero(newValueForFirstNumber))) || isResult) {
-        number1 = newValueForFirstNumber;
-        replaceNumber('firstNumber');
+    const isFirstNumberZero = checkIfZero(number1);
 
+    if (isFirstNumberZero) {
+        preventDoubleZero('first', newValueForFirstNumber);
+    } else if (isResult) {
+        number1 = newValueForFirstNumber;
+
+        replaceNumber('firstNumber');
         disableIsResultIfActive();
-    } else if (checkIfZero(number1) && (checkIfZero(newValueForFirstNumber))) {
-        return
     } else {
         number1 = add(number1, newValueForFirstNumber);
         addToDisplay(newValueForFirstNumber);
