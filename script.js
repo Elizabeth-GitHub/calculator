@@ -480,7 +480,11 @@ function handleKeyDown(event) {
     } else if (keyPressed === SYMBOLS.ESCAPE) {
       clearAll();
     } else if (keyPressed === SYMBOLS.EQUAL || keyPressed === SYMBOLS.ENTER) {
-      handleEqualSign();
+        if (isZeroError) {
+            event.preventDefault();
+        } else {
+            handleEqualSign();
+        }
     } else {
       event.preventDefault();
     }
