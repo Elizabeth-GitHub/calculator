@@ -216,13 +216,6 @@ function operate(element1, element2, symbol) {
     }
 }
 
-function checkIfZero(valueToCheck) {
-    return valueToCheck === ZERO;
-}
-
-function replaceFirstNumber() {
-    containerDisplay.textContent = number1;
-}
 
 function addToDisplay(valueToDisplay, gap=false) {
     containerDisplay.textContent += (gap) ? ` ${valueToDisplay} ` :valueToDisplay;
@@ -233,23 +226,37 @@ function disableIsResultIfActive() {
         isResult = false;
     }
 }
+function checkIfZero(valueToCheck) {
+    return valueToCheck === ZERO;
+}
+
+function replaceNumber(numberToReplace) { // numberToReplace: 'firstNumber' or 'secondNumber'
+    if (numberToReplace === 'firstNumber') {
+        containerDisplay.textContent = number1;
+    } else if (numberToReplace === 'secondNumber'){
+        containerDisplay.textContent = containerDisplay.textContent.slice(0, -1) + number2;
+    }
+}
 
 function preventDoubleZero(whichNumber, newValue) { // whichNumber: 'first' or 'second'
     if (!checkIfZero(newValue)) {
         if (whichNumber === 'first') {
             number1 = newValue;
-            replaceFirstNumber();
+            replaceNumber('firstNumber');
+        } else {
+            number2 = newValue;
+            replaceNumber('secondNumber');
         }
     }
 }
 
 function handleFirstNumber(newValueForFirstNumber) {
-    if (checkIfZero) {
+    if (checkIfZero(number1)) {
         preventDoubleZero('first', newValueForFirstNumber);
     }
     else if ((checkIfZero(number1) && !(checkIfZero(newValueForFirstNumber))) || isResult) {
         number1 = newValueForFirstNumber;
-        replaceFirstNumber();
+        replaceNumber('firstNumber');
 
         disableIsResultIfActive();
     } else if (checkIfZero(number1) && (checkIfZero(newValueForFirstNumber))) {
@@ -397,25 +404,21 @@ function hideErrorMessage(errorToHide) {
 }
 
 function handleContinueOfSecondNumber(valueToContinueSecondNumber) {
-    if (checkIfZero(number2) || number2 === '0.') {
+    const isSecondNumberZero = checkIfZero(number2);
+    
+    if (!isSecondNumberZero || number2 === '0.') { /// ???
         hideErrorMessage(errorZero);
+    }
 
-        if (checkIfZero(number2)) {
-            if (checkIfZero(valueToContinueSecondNumber)) {
-                return;
-            } else {
-            deleteLastSymbol();
-            number2 = valueToContinueSecondNumber;
-            isSecondNumber = true;
-            }
-        } else {
-            number2 = add(number2, valueToContinueSecondNumber); 
-        }    
+    if (isSecondNumberZero) {
+        preventDoubleZero('second', valueToContinueSecondNumber);
     } else {
         number2 = add(number2, valueToContinueSecondNumber);
-    }  
-
-    addToDisplay(valueToContinueSecondNumber);
+        addToDisplay(valueToContinueSecondNumber);
+            /*deleteLastSymbol();
+            number2 = valueToContinueSecondNumber;
+            isSecondNumber = true;*/
+    }
 }
 
 function handleDigitButton(digitValue) { 
