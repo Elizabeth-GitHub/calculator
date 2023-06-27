@@ -458,55 +458,68 @@ function hideErrorIfEqualErrorDisplayed(inputSource, symbolTyped) { // inputSour
         }
     }
 }
-//////////////////
+
+function handleDecimalPointButton() {
+    if (isFirstNumber) {
+        number1 += SYMBOLS.DOT;
+
+        disableIsResultIfActive()
+    } else {
+        number2 += SYMBOLS.DOT;
+    }
+
+    addToDisplay(SYMBOLS.DOT);
+    disableButton(buttonDecimalPoint);
+}
+
 function handleKeyDown(event) {
     const keyPressed = event.key;
 
     hideErrorIfEqualErrorDisplayed('keyboard', keyPressed);
-  
-    if (checkIfDigit(keyPressed)) {
-      handleDigitButton(keyPressed);
-    } else if (Object.values(OPERATORS).includes(keyPressed)) {
-        if (areOperatorsDisabled) {
+
+    switch (keyPressed) {
+        case SYMBOLS.DOT:
+          if (isDecimalPointDisabled) {
             event.preventDefault();
-        } else {
-            handleOperatorButton(keyPressed);
-        }
-    } else if (keyPressed === SYMBOLS.DOT) {
-        if (isDecimalPointDisabled) {
-            event.preventDefault();
-        } else {
+          } else {
             handleDecimalPointButton();
-        }
-    } else if (keyPressed === SYMBOLS.BACKSPACE) {
-      deleteLastSymbol();
-    } else if (keyPressed === SYMBOLS.ESCAPE) {
-      clearAll();
-    } else if (keyPressed === SYMBOLS.EQUAL || keyPressed === SYMBOLS.ENTER) {
-        if (isZeroError) {
+          }
+          break;
+    
+        case SYMBOLS.BACKSPACE:
+          deleteLastSymbol();
+          break;
+    
+        case SYMBOLS.ESCAPE:
+          clearAll();
+          break;
+    
+        case SYMBOLS.EQUAL:
+        case SYMBOLS.ENTER:
+          if (isZeroError) {
             event.preventDefault();
-        } else {
+          } else {
             handleEqualSign();
-        }
-    } else {
-      event.preventDefault();
-    }
+          }
+          break;
+    
+        default:
+          if (checkIfDigit(keyPressed)) {
+            handleDigitButton(keyPressed);
+          } else if (Object.values(OPERATORS).includes(keyPressed)) {
+            if (areOperatorsDisabled) {
+              event.preventDefault();
+            } else {
+              handleOperatorButton(keyPressed);
+            }
+          } else {
+            event.preventDefault();
+          }
+          break;
+      }
 }
+//////////////////
 
-function handleDecimalPointButton() {
-    const symbolPoint = buttonDecimalPoint.textContent;
-
-    if (isFirstNumber) {
-        number1 += symbolPoint;
-
-        disableIsResultIfActive()
-    } else {
-        number2 += symbolPoint;
-    }
-
-    addToDisplay(symbolPoint);
-    disableButton(buttonDecimalPoint);
-}
 
 function handleButtonClick(event) {
     const buttonClicked = event.target;
