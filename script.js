@@ -57,17 +57,18 @@ const containers = [
     containerIconCredit
   ];
 
-let isFirstNumber = true;
-let isOperator = false;
-let isSecondNumber = false;
+let number1;
+let number2;
+let operator;
+let isFirstNumber;
+let isOperator;
+let isSecondNumber;
 let isDecimalPointDisabled = false;
 let isEqualError = false;
 let isZeroError = false;
 let isResult = false;
 let areOperatorsDisabled = false;
-let number1;
-let number2;
-let operator;
+
 
 containers.forEach(container => {
     container.classList.add('container');
@@ -184,6 +185,9 @@ function createButtonsDigits() {
 }
 
 function setDefaultValues() {
+    isFirstNumber = true;
+    isOperator = false;
+    isSecondNumber = false;
     [number1, number2, operator] = [ZERO, EMPTY, EMPTY];
 }
 
@@ -310,6 +314,12 @@ function showErrorMessage(errorToShow) {
     }
 }
 
+function enableDecimalPointIfDisabled() {
+    if (isDecimalPointDisabled) {
+        enableButton(buttonDecimalPoint);
+    }
+}
+
 function handleStartOfSecondNumber(valueToStartSecondNumber) {
     isOperator = false;
     isSecondNumber = true;
@@ -381,7 +391,8 @@ function deleteLastSymbol() {
     const currentDisplay = containerDisplay.textContent;
     const currentDisplayLength = containerDisplay.textContent.length;
     const currentSymbol = currentDisplay[currentDisplayLength - 1];
-    const previousSymbol = currentDisplay[currentDisplayLength - 2]
+    const previousSymbol = currentDisplay[currentDisplayLength - 2];
+    const currentDisplayWithoutLastSymbol = currentDisplay.slice(0, -1);
     
 
     if (currentSymbol === SYMBOLS.DOT) {
@@ -406,8 +417,6 @@ function deleteLastSymbol() {
             handleFirstNumberDeletion(currentDisplayWithoutLastSymbol);
         }
     }  else {
-        const currentDisplayWithoutLastSymbol = currentDisplay.slice(0, -1);
-
         if (isSecondNumber) {
             handleSecondNumberDeletion(currentDisplayWithoutLastSymbol, previousSymbol);          
         } else if (isFirstNumber) {
@@ -429,6 +438,31 @@ function handleDigitButton(digitValue) {
 function shiftFromFirstToOperator() {
     isFirstNumber = false;
     isOperator = true;
+}
+
+function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when we enter the function after the clicking '=', false after clicking any other operator.
+    let result = operate(parseFloat(number1), parseFloat(number2), operator);
+
+    containerDisplay.textContent = parseFloat(result.toFixed(5));
+    
+    number1 = result.toString();
+    isResult = true;
+    number2 = EMPTY; 
+    isSecondNumber = false;
+
+    if (isAfterEqualClick) {
+        isFirstNumber = true;
+        isOperator = false;
+        operator = EMPTY;
+    } else {
+        shiftFromFirstToOperator();
+    }
+
+    if (!Number.isInteger(result)) {
+        disableButton(buttonDecimalPoint);
+    } else {
+        enableDecimalPointIfDisabled();
+    } 
 }
 
 function handleOperatorButton(operatorValue) {
@@ -470,6 +504,26 @@ function handleDecimalPointButton() {
 
     addToDisplay(SYMBOLS.DOT);
     disableButton(buttonDecimalPoint);
+}
+
+function clearAll() {
+    setDefaultValues();
+    containerDisplay.textContent = number1;
+    
+    enableDecimalPointIfDisabled();  
+
+    if (isZeroError) {
+        hideErrorMessage(errorZero);
+    }
+}
+
+function handleEqualSign(){
+    if (!isSecondNumber) {
+        showErrorMessage(errorEqual);
+        return;
+    }
+
+    getResult();
 }
 
 function handleKeyDown(event) {
@@ -518,8 +572,6 @@ function handleKeyDown(event) {
           break;
       }
 }
-//////////////////
-
 
 function handleButtonClick(event) {
     const buttonClicked = event.target;
@@ -556,59 +608,3 @@ function addEventListeners() {
     document.addEventListener('keydown', handleKeyDown);
     containerButtons.addEventListener('click', handleButtonClick);
 }
-
-
-function enableDecimalPointIfDisabled() {
-    if (isDecimalPointDisabled) {
-        enableButton(buttonDecimalPoint);
-    }
-}
-
-function clearAll() {
-    isSecondNumber = false;
-    setDefaultValues();
-    containerDisplay.textContent = number1;
-
-    enableDecimalPointIfDisabled();  
-
-    if (isZeroError) {
-        hideErrorMessage(errorZero);
-    }
-}
-
-
-
-function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when we enter the function after the clicking '=', false after clicking any other operator.
-    let result = operate(parseFloat(number1), parseFloat(number2), operator);
-
-    containerDisplay.textContent = parseFloat(result.toFixed(5));
-    
-    number1 = result.toString();
-    isResult = true;
-    number2 = EMPTY; 
-    isSecondNumber = false;
-
-    if (isAfterEqualClick) {
-        isFirstNumber = true;
-        isOperator = false;
-        operator = EMPTY;
-    } else {
-        shiftFromFirstToOperator();
-    }
-
-    if (!Number.isInteger(result)) {
-        disableButton(buttonDecimalPoint);
-    } else {
-        enableDecimalPointIfDisabled();
-    } 
-}
-
-function handleEqualSign(){
-    if (!isSecondNumber) {
-        showErrorMessage(errorEqual);
-        return;
-    }
-
-    getResult();
-}
-
