@@ -7,11 +7,15 @@ h1 {
 
 a {
     text-decoration: none;
-  }
+}
   
-  a, a:visited {
+a, a:visited {
     color: inherit;
-  }
+}
+
+a:hover {
+    color:  #8f3b3b;
+}
 
 .container {
     display: flex;
