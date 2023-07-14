@@ -243,6 +243,7 @@ function preventDoubleZero(whichNumber, newValue) { // whichNumber: 'first' or '
         } else {
             number2 = newValue;
             replaceNumber('secondNumber');
+            hideErrorMessage(errorZero);
         }
     }
 }
