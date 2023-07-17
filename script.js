@@ -364,6 +364,7 @@ function handleContinueOfSecondNumber(valueToContinueSecondNumber) {
 }
 
 function checkIfDigit(symbolToCheck) {
+    console.log(`isDigit: ${!isNaN(parseFloat(symbolToCheck))}`);
     return (!isNaN(parseFloat(symbolToCheck)));
 }
 
@@ -441,10 +442,13 @@ function shiftFromFirstToOperator() {
     isOperator = true;
 }
 
-function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when we enter the function after the clicking '=', false after clicking any other operator.
-    let result = operate(parseFloat(number1), parseFloat(number2), operator);
+function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when we enter the function after the clicking '=' or pressing the 'Enter' key, false after clicking any other operator.
+    const result = operate(parseFloat(number1), parseFloat(number2), operator);
+    console.log(`getResult() arguments: ${parseFloat(number1)}, ${parseFloat(number2)}, ${operator} `);
+    console.log(`Result: ${result}`);
 
     containerDisplay.textContent = parseFloat(result.toFixed(5));
+    console.log(`containerDisplay.textContent: ${containerDisplay.textContent }`);
     
     number1 = result.toString();
     isResult = true;
@@ -452,10 +456,12 @@ function getResult(isAfterEqualClick=true) {  // isAfterEqualClick = true when w
     isSecondNumber = false;
 
     if (isAfterEqualClick) {
+        console.log('isAfterEqualClick = True');
         isFirstNumber = true;
         isOperator = false;
         operator = EMPTY;
     } else {
+        console.log('isAfterEqualClick = False');
         shiftFromFirstToOperator();
     }
 
@@ -524,11 +530,13 @@ function handleEqualSign(){
         return;
     }
 
+    console.log('Go to getResult()');
     getResult();
 }
 
 function handleKeyDown(event) {
     const keyPressed = event.key;
+    event.target.blur();
 
     hideErrorIfEqualErrorDisplayed('keyboard', keyPressed);
 
@@ -551,11 +559,15 @@ function handleKeyDown(event) {
     
         case SYMBOLS.EQUAL:
         case SYMBOLS.ENTER:
+            console.log(keyPressed);
           if (isZeroError) {
             event.preventDefault();
           } else {
+            console.log(`current display: ${containerDisplay.textContent}`);
+            console.log('Go to handleEqualSign()');
             handleEqualSign();
           }
+          console.log('break');
           break;
     
         default:
@@ -567,15 +579,15 @@ function handleKeyDown(event) {
             } else {
               handleOperatorButton(keyPressed);
             }
-          } else {
-            event.preventDefault();
-          }
+          } 
           break;
       }
 }
 
 function handleButtonClick(event) {
     const buttonClicked = event.target;
+
+    buttonClicked.blur();
 
     hideErrorIfEqualErrorDisplayed('mouse', buttonClicked);
 
@@ -597,9 +609,9 @@ function handleButtonClick(event) {
             const valueOfClickedButton = buttonClicked.textContent;
 
             if (classButton.contains('button-digit')) {
-            handleDigitButton(valueOfClickedButton);
+                handleDigitButton(valueOfClickedButton);
             } else if (classButton.contains('button-operator')) {
-            handleOperatorButton(valueOfClickedButton);
+                handleOperatorButton(valueOfClickedButton);
             }
             break;
     }
