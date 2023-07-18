@@ -536,7 +536,6 @@ function handleEqualSign(){
 
 function handleKeyDown(event) {
     const keyPressed = event.key;
-    event.target.blur();
 
     hideErrorIfEqualErrorDisplayed('keyboard', keyPressed);
 
@@ -566,6 +565,7 @@ function handleKeyDown(event) {
             console.log(`current display: ${containerDisplay.textContent}`);
             console.log('Go to handleEqualSign()');
             handleEqualSign();
+            event.preventDefault();
           }
           console.log('break');
           break;
@@ -579,15 +579,15 @@ function handleKeyDown(event) {
             } else {
               handleOperatorButton(keyPressed);
             }
-          } 
+          } else {
+            key.preventDefault();
+          }
           break;
       }
 }
 
 function handleButtonClick(event) {
     const buttonClicked = event.target;
-
-    buttonClicked.blur();
 
     hideErrorIfEqualErrorDisplayed('mouse', buttonClicked);
 
