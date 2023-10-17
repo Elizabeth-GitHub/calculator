@@ -1,5 +1,6 @@
 # calculator
-✨[Live DEMO](https://elizabeth-github.github.io/calculator/)✨  
+✨[Live DEMO](https://elizabeth-github.github.io/calculator/)✨ 
+[calculator-screenshot]https://github.com/Elizabeth-GitHub/calculator/blob/main/images/calculatorScreenshot.png 
 This repository contains a simple calculator project implemented according to the Odin curriculum. The calculator is built using HTML, CSS, and JavaScript, and it provides basic arithmetic operations such as addition, subtraction, multiplication, and division.
 
 ## Credits
